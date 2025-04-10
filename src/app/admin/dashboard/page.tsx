@@ -5,22 +5,21 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'react-hot-toast';
 
-// Version simplifiée pour le client
-interface UserData {
+// Définition d'une interface qui correspond exactement au type User de Supabase
+interface AdminUser {
   id: string;
-  email?: string;
+  email?: string | null;
   created_at: string;
   user_metadata?: {
     role?: string;
     name?: string;
-  };
+  } | null;
 }
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [currentUser, setCurrentUser] = useState<UserData | null>(null);
+  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
   
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -35,8 +34,13 @@ export default function AdminDashboard() {
         
         // Vérifier si l'utilisateur a le rôle superadmin
         const { data: userData } = await supabase.auth.getUser();
-        const userRole = userData.user?.user_metadata?.role;
-        setCurrentUser(userData.user as UserData);
+        
+        if (!userData.user) {
+          router.push('/auth/login');
+          return;
+        }
+        
+        const userRole = userData.user.user_metadata?.role;
         
         if (userRole !== 'superadmin') {
           toast.error("Accès non autorisé");
@@ -44,14 +48,19 @@ export default function AdminDashboard() {
           return;
         }
         
-        // Pour l'instant, afficher seulement l'utilisateur actuel
-        // En production, il faudrait créer une API ou Edge Function pour récupérer tous les utilisateurs
-        setUsers([userData.user as UserData]);
+        // Convertir au format AdminUser
+        setCurrentUser({
+          id: userData.user.id,
+          email: userData.user.email,
+          created_at: userData.user.created_at,
+          user_metadata: userData.user.user_metadata
+        });
+        
         setLoading(false);
       } catch (error) {
         console.error('Erreur:', error);
-        toast.error("Une erreur est survenue lors du chargement");
-        setLoading(false);
+        toast.error("Une erreur est survenue");
+        router.push('/dashboard');
       }
     };
     
@@ -78,13 +87,8 @@ export default function AdminDashboard() {
           
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded mb-6">
             <p className="text-yellow-700">
-              ⚠️ Version simplifiée du tableau de bord SuperAdmin. Pour une implémentation complète, vous aurez besoin de créer :
+              ⚠️ Version initiale du tableau de bord SuperAdmin. Les fonctionnalités complètes de gestion des utilisateurs seront implémentées ultérieurement.
             </p>
-            <ul className="list-disc ml-6 mt-2 text-yellow-700">
-              <li>Une API côté serveur ou des Edge Functions pour accéder aux données utilisateurs</li>
-              <li>Des fonctions sécurisées pour la gestion des utilisateurs</li>
-              <li>Une interface complète de gestion des utilisateurs</li>
-            </ul>
           </div>
           
           <div className="overflow-x-auto">
