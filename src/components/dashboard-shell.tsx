@@ -3,7 +3,9 @@ import { cn } from "@/lib/utils"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 
-interface DashboardShellProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface DashboardShellProps extends React.HTMLAttributes<HTMLDivElement> {
+  // Propriétés spécifiques du DashboardShell, si nécessaire
+}
 
 export default function DashboardShell({ children, className, ...props }: DashboardShellProps) {
   return (

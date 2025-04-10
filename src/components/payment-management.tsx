@@ -265,7 +265,12 @@ export function PaymentManagement() {
               {filteredPayments.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="h-24 text-center">
-                    Aucun paiement trouvé.
+                    <div className="flex flex-col space-y-1">
+                      <span className="text-sm font-medium">Aucun paiement n&apos;a été trouvé.</span>
+                      <span className="text-sm text-muted-foreground">
+                        Les paiements apparaîtront ici une fois qu&apos;ils auront été effectués.
+                      </span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (

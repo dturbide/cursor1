@@ -21,9 +21,12 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+  // Propriétés spécifiques, si nécessaire
+  collapsible?: boolean
+}
 
-export function Sidebar({ className, ...props }: SidebarProps) {
+export function Sidebar({ className, collapsible, ...props }: SidebarProps) {
   return (
     <div className={cn("pb-12 w-64 border-r bg-background", className)} {...props}>
       <div className="space-y-4 py-4">

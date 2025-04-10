@@ -159,28 +159,6 @@ export function UserManagement() {
     }
   }
 
-  // Fonction pour changer le rôle d'un utilisateur
-  const updateUserRole = async (userId: string, newRole: string) => {
-    try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ role: newRole })
-        .eq('id', userId)
-      
-      if (error) {
-        console.error('Erreur lors de la mise à jour du rôle:', error)
-        return
-      }
-      
-      // Mise à jour de l'état local
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, role: newRole } : user
-      ))
-    } catch (error) {
-      console.error('Erreur:', error)
-    }
-  }
-
   return (
     <Card>
       <CardHeader>

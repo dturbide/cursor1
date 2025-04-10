@@ -30,13 +30,9 @@ export default async function UsersPage() {
   }
 
   // Récupérer les données utilisateurs de la base de données
-  const { data: users, error } = await supabase
+  await supabase
     .from('user_profiles')
     .select('*');
-
-  if (error) {
-    console.error('Erreur lors de la récupération des utilisateurs:', error);
-  }
 
   return (
     <div className="flex flex-col gap-8">

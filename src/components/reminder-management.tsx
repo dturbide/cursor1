@@ -288,7 +288,12 @@ export function ReminderManagement() {
               {filteredReminders.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={10} className="h-24 text-center">
-                    Aucun rappel trouvé.
+                    <div className="flex flex-col space-y-1">
+                      <span className="text-sm font-medium">Aucun rappel n&apos;a été trouvé.</span>
+                      <span className="text-sm text-muted-foreground">
+                        Les rappels apparaîtront ici une fois qu&apos;ils auront été créés.
+                      </span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (

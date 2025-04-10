@@ -30,13 +30,9 @@ export default async function OrganizationsPage() {
   }
 
   // Récupérer les données des organisations
-  const { data: organizations, error } = await supabase
+  await supabase
     .from('organizations')
     .select('*');
-
-  if (error) {
-    console.error('Erreur lors de la récupération des organisations:', error);
-  }
 
   return (
     <div className="flex flex-col gap-8">
