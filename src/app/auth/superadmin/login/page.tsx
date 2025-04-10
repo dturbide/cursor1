@@ -19,30 +19,64 @@ export default function SuperAdminLoginPage() {
     setLoading(true);
 
     try {
+      console.log('Tentative de connexion pour:', email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur de connexion:', error);
+        throw error;
+      }
+
+      console.log('Connexion réussie, vérification du rôle...');
+      console.log('User ID:', data.user.id);
+
+      // Vérification de la structure de la table
+      const { data: tableInfo, error: tableError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .limit(1);
+
+      if (tableError) {
+        console.error('Erreur lors de la vérification de la table:', tableError);
+        throw new Error('Erreur lors de la vérification de la table user_profiles');
+      }
+
+      console.log('Structure de la table:', tableInfo);
 
       // Vérification du rôle superadmin
       const { data: userData, error: userError } = await supabase
         .from('user_profiles')
-        .select('role')
-        .eq('id', data.user.id)
+        .select('*')
+        .eq('email', email)
         .single();
 
-      if (userError) throw userError;
+      if (userError) {
+        console.error('Erreur lors de la vérification du rôle:', userError);
+        throw userError;
+      }
+
+      console.log('Données utilisateur:', userData);
+
+      if (!userData) {
+        console.error('Aucune donnée utilisateur trouvée');
+        throw new Error('Profil utilisateur non trouvé');
+      }
 
       if (userData.role !== 'superadmin') {
+        console.error('Rôle non autorisé:', userData.role);
         await supabase.auth.signOut();
         throw new Error('Accès non autorisé. Seuls les super administrateurs peuvent se connecter ici.');
       }
 
+      console.log('Rôle superadmin confirmé, redirection...');
       // Redirection vers le tableau de bord superadmin
       router.push('/superadmin/dashboard');
     } catch (error: unknown) {
+      console.error('Erreur complète:', error);
       setError(error instanceof Error ? error.message : 'Une erreur est survenue lors de la connexion.');
     } finally {
       setLoading(false);
