@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const supabase = createRouteHandlerClient({ cookies });
 
     // Tentative de connexion
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
