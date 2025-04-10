@@ -2,17 +2,6 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 
-// Définition d'une interface qui correspond exactement au type User de Supabase
-interface AdminUser {
-  id: string;
-  email?: string | null;
-  created_at: string;
-  user_metadata?: {
-    role?: string;
-    name?: string;
-  } | null;
-}
-
 export default async function AdminDashboard() {
   const supabase = createServerComponentClient({ cookies });
   
