@@ -1,18 +1,37 @@
-import Link from 'next/link'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+'use client';
 
-export default async function LandingPage() {
-  const supabase = createServerComponentClient({ cookies })
-  const { data: { session } } = await supabase.auth.getSession()
-  const isLoggedIn = !!session
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
+
+export default function LandingPage() {
+  const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function getSession() {
+      const { data } = await supabase.auth.getSession()
+      setSession(data.session)
+      setLoading(false)
+    }
+    getSession()
+  }, [])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    window.location.reload()
+  }
+
+  if (loading) {
+    return <div>Chargement...</div>
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
       <div className="max-w-md w-full px-6">
         <h1 className="text-4xl font-bold text-center mb-8">VotreSaaS</h1>
         
-        {isLoggedIn ? (
+        {session ? (
           <div className="text-center space-y-4">
             <p className="text-lg">
               Vous êtes connecté en tant que <span className="font-semibold">{session.user.email}</span>
@@ -25,12 +44,12 @@ export default async function LandingPage() {
                 Accéder au tableau de bord
               </Link>
               
-              <Link 
-                href="/logout" 
+              <button 
+                onClick={handleLogout} 
                 className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 flex justify-center"
               >
                 Se déconnecter
-              </Link>
+              </button>
             </div>
           </div>
         ) : (
