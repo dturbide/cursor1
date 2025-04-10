@@ -47,7 +47,7 @@ export default async function SuperAdminDashboard() {
                 {user?.email}
               </div>
               {/* Bouton de déconnexion */}
-              <form action="/auth/signout" method="post">
+              <form action={`${process.env.NEXT_PUBLIC_SITE_URL}/auth/signout`} method="post">
                 <button
                   type="submit"
                   className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition"
