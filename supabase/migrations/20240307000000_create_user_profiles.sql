@@ -27,7 +27,11 @@ CREATE POLICY "Superadmins can view all profiles"
     ON user_profiles FOR ALL
     TO authenticated
     USING (
-        role = 'superadmin'::user_role
+        EXISTS (
+            SELECT 1 FROM auth.users
+            WHERE id = auth.uid()
+            AND raw_user_meta_data->>'role' = 'superadmin'
+        )
     );
 
 -- Function to handle user creation
