@@ -27,7 +27,7 @@ export default async function LandingPage() {
                 Accéder au tableau de bord
               </Link>
               
-              <form action="/auth/signout" method="post">
+              <form action="/auth/signout" method="post" className="w-full">
                 <button 
                   type="submit"
                   className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 flex justify-center"
@@ -63,10 +63,10 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        <p className="mt-8 text-center text-base text-gray-500">
+        <div className="mt-8 text-center text-base text-gray-500 space-x-4">
           <Link
             href="/auth/login"
-            className="font-medium text-indigo-600 hover:text-indigo-500 mr-4"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
           >
             Se connecter au compte standard
           </Link>
@@ -76,7 +76,7 @@ export default async function LandingPage() {
           >
             Accès Super Admin
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   )
