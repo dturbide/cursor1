@@ -11,11 +11,14 @@ export default function LogoutButton({ className = '' }) {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      // Vider les cookies et la session
       await supabase.auth.signOut();
-      router.push('/auth/login');
+      // Force un rafraîchissement complet de la page
+      window.location.href = '/auth/login';
     } catch (error) {
       console.error('Erreur de déconnexion:', error);
-      router.push('/auth/login');
+      // Même en cas d'erreur, essayer un rafraîchissement complet
+      window.location.href = '/auth/login';
     }
   };
 

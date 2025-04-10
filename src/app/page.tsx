@@ -1,47 +1,61 @@
 import Link from 'next/link'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = createServerComponentClient({ cookies })
+  const { data: { session } } = await supabase.auth.getSession()
+  const isLoggedIn = !!session
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-800">
-      <div className="container mx-auto px-4">
-        {/* Navigation */}
-        <nav className="py-6">
-          <div className="flex justify-between items-center">
-            <div className="text-white text-2xl font-bold">VotreSaaS</div>
-            <div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full px-6">
+        <h1 className="text-4xl font-bold text-center mb-8">VotreSaaS</h1>
+        
+        {isLoggedIn ? (
+          <div className="text-center space-y-4">
+            <p className="text-lg">
+              Vous êtes connecté en tant que <span className="font-semibold">{session.user.email}</span>
+            </p>
+            <div className="flex flex-col space-y-3">
               <Link 
-                href="/auth/login"
-                className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                href="/dashboard" 
+                className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 flex justify-center"
               >
-                Connexion
+                Accéder au tableau de bord
+              </Link>
+              
+              <Link 
+                href="/logout" 
+                className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 flex justify-center"
+              >
+                Se déconnecter
               </Link>
             </div>
           </div>
-        </nav>
-
-        {/* Hero Section */}
-        <div className="py-20">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-white mb-6">
-              Gérez votre entreprise efficacement
-            </h1>
-            <p className="text-xl text-blue-100 mb-8">
-              Solution complète pour la gestion de vos clients, devis et factures
-            </p>
-            <div className="space-x-4">
-              <Link 
-                href="/auth/register"
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-              >
-                Essai gratuit de 14 jours
-              </Link>
-              <Link 
-                href="/pricing"
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors"
-              >
-                Voir les forfaits
-              </Link>
-            </div>
+        ) : (
+          <div className="text-center">
+            <Link 
+              href="/auth/login" 
+              className="inline-block py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700"
+            >
+              Connexion
+            </Link>
+          </div>
+        )}
+        
+        <div className="mt-12 space-y-8">
+          <h2 className="text-3xl font-bold text-center">Gérez votre entreprise efficacement</h2>
+          <p className="text-center text-gray-600">
+            Solution complète pour la gestion de vos clients, devis et factures
+          </p>
+          <div className="flex justify-center space-x-4">
+            <button className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+              Essai gratuit de 14 jours
+            </button>
+            <button className="bg-white text-blue-600 py-2 px-4 rounded-md border border-blue-600 hover:bg-blue-50">
+              Voir les forfaits
+            </button>
           </div>
         </div>
       </div>
