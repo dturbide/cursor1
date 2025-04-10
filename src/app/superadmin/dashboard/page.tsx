@@ -5,12 +5,24 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
-import LogoutButton from '@/app/components/LogoutButton';
 
 export default function SuperAdminDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
   const router = useRouter();
+
+  // Fonction de déconnexion intégrée
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await supabase.auth.signOut();
+      window.location.href = '/auth/login';
+    } catch (error) {
+      console.error('Erreur de déconnexion:', error);
+      window.location.href = '/auth/login';
+    }
+  };
 
   useEffect(() => {
     async function getUser() {
@@ -60,7 +72,14 @@ export default function SuperAdminDashboard() {
               <div className="text-sm opacity-75">
                 {user?.email}
               </div>
-              <LogoutButton className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition" />
+              {/* Bouton de déconnexion intégré */}
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className={`px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition ${loggingOut ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                {loggingOut ? 'Déconnexion...' : 'Déconnexion'}
+              </button>
             </div>
           </div>
         </div>

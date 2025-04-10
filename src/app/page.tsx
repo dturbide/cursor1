@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import LogoutLink from './LogoutLink'
 
 export default async function LandingPage() {
   const supabase = createServerComponentClient({ cookies })
