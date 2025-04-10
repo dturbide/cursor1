@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
+import LogoutButton from '@/app/components/LogoutButton';
 
 export default function SuperAdminDashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -59,13 +60,7 @@ export default function SuperAdminDashboard() {
               <div className="text-sm opacity-75">
                 {user?.email}
               </div>
-              {/* Remplacer le bouton par un lien */}
-              <Link
-                href="/api/auth/logout"
-                className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition inline-block"
-              >
-                Déconnexion
-              </Link>
+              <LogoutButton className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition" />
             </div>
           </div>
         </div>
