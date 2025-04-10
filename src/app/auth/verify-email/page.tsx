@@ -7,7 +7,7 @@ export default function VerifyEmailPage() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Un email de confirmation a été envoyé à votre adresse email.
-          Veuillez cliquer sur le lien dans l'email pour activer votre compte.
+          Veuillez cliquer sur le lien dans l&apos;email pour activer votre compte.
         </p>
       </div>
     </div>
