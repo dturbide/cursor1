@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface CustomError extends Error {
   message: string;
@@ -15,6 +16,7 @@ export default function SuperAdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState(false);
+  const router = useRouter();
   const supabase = createClientComponentClient();
 
   // Vérifier si l'utilisateur est déjà connecté
@@ -29,12 +31,12 @@ export default function SuperAdminLoginPage() {
           .single();
 
         if (profileData?.role === 'superadmin') {
-          window.location.href = '/superadmin/dashboard';
+          router.push('/superadmin/dashboard');
         }
       }
     };
     checkSession();
-  }, [supabase]);
+  }, [supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,44 +45,22 @@ export default function SuperAdminLoginPage() {
     setRedirecting(false);
 
     try {
-      console.log('Tentative de connexion avec:', { email, password });
-      
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/auth/superadmin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signInError) {
-        console.error('Erreur de connexion:', signInError);
-        throw signInError;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Une erreur est survenue');
       }
 
-      if (!signInData.user) {
-        console.error('Aucun utilisateur retourné après la connexion');
-        throw new Error('Aucun utilisateur retourné après la connexion');
-      }
-
-      console.log('Connexion réussie, vérification du rôle...');
-
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('role')
-        .eq('id', signInData.user.id)
-        .single();
-
-      if (profileError) {
-        console.error('Erreur lors de la vérification du rôle:', profileError);
-        throw profileError;
-      }
-
-      if (!profileData || profileData.role !== 'superadmin') {
-        console.error('Rôle non autorisé:', profileData?.role);
-        throw new Error('Accès non autorisé');
-      }
-
-      console.log('Rôle vérifié, redirection vers le dashboard...');
       setRedirecting(true);
-      window.location.href = '/superadmin/dashboard';
+      router.push('/superadmin/dashboard');
     } catch (error: unknown) {
       console.error('Erreur complète:', error);
       const customError = error as CustomError;
