@@ -14,41 +14,50 @@ export async function middleware(req: NextRequest) {
   console.log('Middleware path:', req.nextUrl.pathname);
   console.log('Session exists:', !!session);
 
-  // Routes protégées (nécessitent une authentification)
-  if (req.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!session) {
+  // Routes publiques (accessibles uniquement si NON authentifié)
+  if (['/auth/login', '/auth/register', '/auth/superadmin/login'].includes(req.nextUrl.pathname)) {
+    if (session) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+    return res;
+  }
+
+  // Rediriger vers login si pas de session pour toutes les routes protégées
+  if (!session) {
+    // Redirection spéciale pour les routes superadmin
+    if (req.nextUrl.pathname.startsWith('/superadmin')) {
+      return NextResponse.redirect(new URL('/auth/superadmin/login', req.url));
+    }
+    
+    // Redirection standard pour les autres routes protégées
+    if (req.nextUrl.pathname.startsWith('/dashboard') || req.nextUrl.pathname === '/') {
       return NextResponse.redirect(new URL('/auth/login', req.url));
     }
   }
 
-  // Routes publiques (accessibles uniquement si NON authentifié)
-  if (['/auth/login', '/auth/register'].includes(req.nextUrl.pathname)) {
-    if (session) {
+  // Pour les routes superadmin, vérifier le rôle dans la table profiles
+  if (session && req.nextUrl.pathname.startsWith('/superadmin')) {
+    try {
+      // Récupérer le rôle depuis la table profiles
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profileError || !profileData || profileData.role !== 'superadmin') {
+        console.log('Accès non autorisé au superadmin pour:', session.user.email);
+        return NextResponse.redirect(new URL('/dashboard', req.url));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification du rôle:', error);
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   }
-
-  // Rediriger vers login si pas de session
-  if (!session && req.nextUrl.pathname.startsWith('/superadmin')) {
-    const redirectUrl = new URL('/auth/login', req.url);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  // Commenté temporairement pour les tests
-  // Pour les routes superadmin, vérifier le rôle
-  // if (req.nextUrl.pathname.startsWith('/superadmin')) {
-  //   const { data: userData } = await supabase.auth.getUser();
-  //   const userRole = userData.user?.user_metadata?.role;
-    
-  //   if (userRole !== 'superadmin') {
-  //     const redirectUrl = new URL('/dashboard', req.url);
-  //     return NextResponse.redirect(redirectUrl);
-  //   }
-  // }
 
   return res;
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*', '/superadmin/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/|images/).*)'],
 };
