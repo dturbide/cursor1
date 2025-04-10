@@ -116,7 +116,7 @@ export default function AIDatabaseEditor() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Instruction pour l'IA
+              Instruction pour l&apos;IA
             </label>
             <textarea
               value={prompt}
