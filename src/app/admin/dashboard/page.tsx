@@ -1,9 +1,6 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'react-hot-toast';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 
 // Définition d'une interface qui correspond exactement au type User de Supabase
 interface AdminUser {
@@ -16,64 +13,37 @@ interface AdminUser {
   } | null;
 }
 
-export default function AdminDashboard() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
+export default async function AdminDashboard() {
+  const supabase = createServerComponentClient({ cookies });
   
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      try {
-        // Vérifier si l'utilisateur est connecté
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          router.push('/auth/login');
-          return;
-        }
-        
-        // Vérifier si l'utilisateur a le rôle superadmin
-        const { data: userData } = await supabase.auth.getUser();
-        
-        if (!userData.user) {
-          router.push('/auth/login');
-          return;
-        }
-        
-        const userRole = userData.user.user_metadata?.role;
-        
-        if (userRole !== 'superadmin') {
-          toast.error("Accès non autorisé");
-          router.push('/dashboard');
-          return;
-        }
-        
-        // Convertir au format AdminUser
-        setCurrentUser({
-          id: userData.user.id,
-          email: userData.user.email,
-          created_at: userData.user.created_at,
-          user_metadata: userData.user.user_metadata
-        });
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Erreur:', error);
-        toast.error("Une erreur est survenue");
-        router.push('/dashboard');
-      }
-    };
-    
-    checkAdminStatus();
-  }, [router]);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
+  if (!session) {
+    redirect('/auth/login');
   }
+  
+  // Vérifier si l'utilisateur a le rôle superadmin
+  const { data: userData } = await supabase.auth.getUser();
+  
+  if (!userData.user) {
+    redirect('/auth/login');
+  }
+  
+  const userRole = userData.user.user_metadata?.role;
+  
+  if (userRole !== 'superadmin') {
+    redirect('/dashboard');
+  }
+  
+  // Convertir au format AdminUser
+  const currentUser = {
+    id: userData.user.id,
+    email: userData.user.email,
+    created_at: userData.user.created_at,
+    user_metadata: userData.user.user_metadata
+  };
   
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -105,22 +75,21 @@ export default function AdminDashboard() {
         </div>
         
         <div className="flex space-x-4">
-          <button
+          <a
+            href="/dashboard"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-            onClick={() => router.push('/dashboard')}
           >
             Retour au tableau de bord
-          </button>
+          </a>
           
-          <button
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              router.push('/auth/login');
-            }}
-          >
-            Se déconnecter
-          </button>
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Se déconnecter
+            </button>
+          </form>
         </div>
       </div>
     </div>

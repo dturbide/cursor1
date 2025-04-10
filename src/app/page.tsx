@@ -1,34 +1,13 @@
-'use client';
-
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Session } from '@supabase/supabase-js';
+import { cookies } from 'next/headers'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 
-export default function LandingPage() {
-  // Typé correctement pour éviter le problème de compilation
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function getSession() {
-      const { data } = await supabase.auth.getSession();
-      // Explicitement typé pour résoudre l'erreur de compilation
-      const userSession: Session | null = data.session;
-      setSession(userSession);
-      setLoading(false);
-    }
-    getSession();
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  }
-
-  if (loading) {
-    return <div>Chargement...</div>
-  }
+export default async function LandingPage() {
+  const supabase = createServerComponentClient({ cookies });
+  
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -48,12 +27,14 @@ export default function LandingPage() {
                 Accéder au tableau de bord
               </Link>
               
-              <button 
-                onClick={handleLogout} 
-                className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 flex justify-center"
-              >
-                Se déconnecter
-              </button>
+              <form action="/auth/signout" method="post">
+                <button 
+                  type="submit"
+                  className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 flex justify-center"
+                >
+                  Se déconnecter
+                </button>
+              </form>
             </div>
           </div>
         ) : (

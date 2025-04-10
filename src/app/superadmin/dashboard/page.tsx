@@ -1,58 +1,32 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
-import { User } from '@supabase/supabase-js';
 
-export default function SuperAdminDashboard() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loggingOut, setLoggingOut] = useState(false);
-  const router = useRouter();
-
-  // Fonction de déconnexion intégrée
-  const handleLogout = async () => {
-    try {
-      setLoggingOut(true);
-      await supabase.auth.signOut();
-      window.location.href = '/auth/login';
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
-      window.location.reload();
-    }
-  };
-
-  useEffect(() => {
-    async function getUser() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          router.push('/auth/login');
-          return;
-        }
-        
-        // Récupérer les informations utilisateur
-        const { data: userData } = await supabase.auth.getUser();
-        setUser(userData.user);
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    getUser();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-      </div>
-    );
+export default async function SuperAdminDashboard() {
+  const supabase = createServerComponentClient({ cookies });
+  
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  
+  if (!session) {
+    redirect('/auth/login');
+  }
+  
+  // Récupérer les informations utilisateur
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  
+  if (!user) {
+    redirect('/auth/login');
+  }
+  
+  // Vérifier si l'utilisateur a le rôle superadmin
+  const userRole = user.user_metadata?.role;
+  
+  if (userRole !== 'superadmin') {
+    redirect('/dashboard');
   }
 
   return (
@@ -73,13 +47,14 @@ export default function SuperAdminDashboard() {
                 {user?.email}
               </div>
               {/* Bouton de déconnexion */}
-              <button
-                onClick={handleLogout}
-                disabled={loggingOut}
-                className={`px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition ${loggingOut ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                {loggingOut ? 'Déconnexion...' : 'Déconnexion'}
-              </button>
+              <form action="/auth/signout" method="post">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition"
+                >
+                  Déconnexion
+                </button>
+              </form>
             </div>
           </div>
         </div>

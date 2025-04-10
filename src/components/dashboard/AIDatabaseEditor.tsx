@@ -10,62 +10,52 @@ type AIResponse = {
 
 export default function AIDatabaseEditor() {
   const [prompt, setPrompt] = useState('')
-  const [table, setTable] = useState('')
   const [schema, setSchema] = useState('public')
+  const [table, setTable] = useState('')
   const [context, setContext] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [response, setResponse] = useState<AIResponse | null>(null)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [response, setResponse] = useState<AIResponse | null>(null)
   const sqlRef = useRef<HTMLPreElement>(null)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!prompt.trim()) {
-      setError('Veuillez entrer une instruction pour l\'IA')
-      return
-    }
-    
-    setIsLoading(true)
+    setLoading(true)
     setError(null)
     setResponse(null)
-    
+
     try {
-      const { data, error } = await modifyTableWithAI(prompt, {
+      const result = await modifyTableWithAI(prompt, {
         schema,
         table: table || undefined,
         context: context || undefined
       })
-      
-      if (error) {
-        setError(typeof error === 'object' && error !== null && 'message' in error 
-          ? error.message as string 
-          : 'Une erreur est survenue')
-      } else if (data) {
-        setResponse(data as AIResponse)
+
+      if (result.error) {
+        throw new Error(result.error instanceof Error ? result.error.message : 'Une erreur est survenue')
       }
-    } catch (e) {
-      setError('Erreur de connexion au service IA')
-      console.error(e)
+
+      setResponse(result.data as AIResponse)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
-  
-  function copyToClipboard() {
-    if (response?.sql && sqlRef.current) {
-      const text = sqlRef.current.textContent || ''
-      navigator.clipboard.writeText(text)
+
+  const copyToClipboard = () => {
+    if (sqlRef.current && response) {
+      navigator.clipboard.writeText(response.sql)
         .then(() => {
-          // Pourrait ajouter un toast ici
-          console.log('Copié dans le presse-papier')
+          // Optionally show a success message
+          alert('SQL copié dans le presse-papiers')
         })
         .catch(err => {
           console.error('Erreur lors de la copie:', err)
         })
     }
   }
-  
+
   return (
     <div className="w-full max-w-5xl mx-auto p-4 space-y-6">
       <div className="bg-white shadow-sm rounded-lg p-6 dark:bg-gray-800">
@@ -130,10 +120,10 @@ export default function AIDatabaseEditor() {
           
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={loading}
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600"
           >
-            {isLoading ? 'Traitement en cours...' : 'Générer SQL avec IA'}
+            {loading ? 'Traitement en cours...' : 'Générer SQL avec IA'}
           </button>
         </form>
       </div>
