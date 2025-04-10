@@ -12,7 +12,7 @@ export function Overview({ className }: OverviewProps) {
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Vue d'ensemble</CardTitle>
+        <CardTitle>Vue d&apos;ensemble</CardTitle>
         <CardDescription>Statistiques et métriques principales</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">

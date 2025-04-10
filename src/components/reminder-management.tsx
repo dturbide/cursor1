@@ -15,6 +15,7 @@ import {
   Search,
   Send,
   XCircle,
+  CalendarCheck,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -264,7 +265,7 @@ export function ReminderManagement() {
                 <TableHead>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    Date d'échéance
+                    Date d&apos;échéance
                   </div>
                 </TableHead>
                 <TableHead>
@@ -275,8 +276,8 @@ export function ReminderManagement() {
                 </TableHead>
                 <TableHead>
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    Date d'envoi
+                    <CalendarCheck className="h-4 w-4" />
+                    Date d&apos;envoi
                   </div>
                 </TableHead>
                 <TableHead>Type</TableHead>

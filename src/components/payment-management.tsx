@@ -247,7 +247,7 @@ export function PaymentManagement() {
                 <TableHead>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    Date d'échéance
+                    Date d&apos;échéance
                   </div>
                 </TableHead>
                 <TableHead>

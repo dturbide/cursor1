@@ -23,7 +23,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
             </div>
             <div className="grid gap-1">
               <p className="font-medium">Nouvel utilisateur inscrit</p>
-              <p className="text-sm text-muted-foreground">Marie Dupont s'est inscrite</p>
+              <p className="text-sm text-muted-foreground">Marie Dupont s&apos;est inscrite</p>
               <p className="text-xs text-muted-foreground">Il y a 15 minutes</p>
             </div>
           </div>
