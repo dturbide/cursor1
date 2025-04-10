@@ -5,18 +5,22 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'react-hot-toast';
 
-interface User {
+// Version simplifiée pour le client
+interface UserData {
   id: string;
-  email: string;
-  role?: string;
-  name?: string;
+  email?: string;
   created_at: string;
+  user_metadata?: {
+    role?: string;
+    name?: string;
+  };
 }
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [currentUser, setCurrentUser] = useState<UserData | null>(null);
   
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -32,6 +36,7 @@ export default function AdminDashboard() {
         // Vérifier si l'utilisateur a le rôle superadmin
         const { data: userData } = await supabase.auth.getUser();
         const userRole = userData.user?.user_metadata?.role;
+        setCurrentUser(userData.user as UserData);
         
         if (userRole !== 'superadmin') {
           toast.error("Accès non autorisé");
@@ -39,66 +44,19 @@ export default function AdminDashboard() {
           return;
         }
         
-        // Récupérer la liste des utilisateurs
-        const { data, error } = await supabase.auth.admin.listUsers();
-        
-        if (error) throw error;
-        
-        setUsers(data?.users || []);
+        // Pour l'instant, afficher seulement l'utilisateur actuel
+        // En production, il faudrait créer une API ou Edge Function pour récupérer tous les utilisateurs
+        setUsers([userData.user as UserData]);
         setLoading(false);
       } catch (error) {
         console.error('Erreur:', error);
-        toast.error("Une erreur est survenue lors du chargement des utilisateurs");
+        toast.error("Une erreur est survenue lors du chargement");
         setLoading(false);
       }
     };
     
     checkAdminStatus();
   }, [router]);
-  
-  const handlePromoteToAdmin = async (userId: string) => {
-    try {
-      // Mettre à jour les métadonnées utilisateur
-      const { error } = await supabase.auth.admin.updateUserById(
-        userId,
-        { user_metadata: { role: 'admin' } }
-      );
-      
-      if (error) throw error;
-      
-      toast.success("L'utilisateur a été promu administrateur");
-      
-      // Rafraîchir la liste
-      const { data, error: fetchError } = await supabase.auth.admin.listUsers();
-      
-      if (fetchError) throw fetchError;
-      
-      setUsers(data?.users || []);
-    } catch (error) {
-      console.error('Erreur:', error);
-      toast.error("Impossible de mettre à jour le rôle de l'utilisateur");
-    }
-  };
-  
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.")) {
-      return;
-    }
-    
-    try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
-      
-      if (error) throw error;
-      
-      toast.success("L'utilisateur a été supprimé");
-      
-      // Mettre à jour la liste
-      setUsers(users.filter(user => user.id !== userId));
-    } catch (error) {
-      console.error('Erreur:', error);
-      toast.error("Impossible de supprimer l'utilisateur");
-    }
-  };
   
   if (loading) {
     return (
@@ -116,80 +74,29 @@ export default function AdminDashboard() {
         </h1>
         
         <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Gestion des utilisateurs</h2>
+          <h2 className="text-xl font-semibold mb-4">Information SuperAdmin</h2>
+          
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded mb-6">
+            <p className="text-yellow-700">
+              ⚠️ Version simplifiée du tableau de bord SuperAdmin. Pour une implémentation complète, vous aurez besoin de créer :
+            </p>
+            <ul className="list-disc ml-6 mt-2 text-yellow-700">
+              <li>Une API côté serveur ou des Edge Functions pour accéder aux données utilisateurs</li>
+              <li>Des fonctions sécurisées pour la gestion des utilisateurs</li>
+              <li>Une interface complète de gestion des utilisateurs</li>
+            </ul>
+          </div>
           
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rôle
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Créé le
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.id.substring(0, 8)}...
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.user_metadata?.name || 'Non défini'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.user_metadata?.role === 'superadmin' 
-                          ? 'bg-purple-100 text-purple-800' 
-                          : user.user_metadata?.role === 'admin' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-green-100 text-green-800'
-                      }`}>
-                        {user.user_metadata?.role || 'utilisateur'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {(!user.user_metadata?.role || user.user_metadata?.role !== 'admin' && user.user_metadata?.role !== 'superadmin') && (
-                        <button
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                          onClick={() => handlePromoteToAdmin(user.id)}
-                        >
-                          Promouvoir admin
-                        </button>
-                      )}
-                      {(!user.user_metadata?.role || user.user_metadata?.role !== 'superadmin') && (
-                        <button
-                          className="text-red-600 hover:text-red-900"
-                          onClick={() => handleDeleteUser(user.id)}
-                        >
-                          Supprimer
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <h3 className="font-medium text-lg mb-2">Votre compte SuperAdmin</h3>
+            {currentUser && (
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <p><span className="font-medium">ID:</span> {currentUser.id}</p>
+                <p><span className="font-medium">Email:</span> {currentUser.email}</p>
+                <p><span className="font-medium">Rôle:</span> {currentUser.user_metadata?.role || 'non défini'}</p>
+                <p><span className="font-medium">Créé le:</span> {new Date(currentUser.created_at).toLocaleDateString()}</p>
+              </div>
+            )}
           </div>
         </div>
         
