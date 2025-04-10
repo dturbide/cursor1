@@ -70,7 +70,7 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `https://cursor1-one.vercel.app/auth/callback`,
         },
       });
 
