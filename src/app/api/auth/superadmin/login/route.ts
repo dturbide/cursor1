@@ -38,6 +38,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Erreur lors de la connexion:', error);
     return NextResponse.json({ error: 'Une erreur est survenue' }, { status: 500 });
   }
 } 
