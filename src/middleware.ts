@@ -24,9 +24,26 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Rediriger à la page login si pas de session
+  if (!session && req.nextUrl.pathname.startsWith('/admin')) {
+    const redirectUrl = new URL('/auth/login', req.url);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // Pour les routes admin, vérifier le rôle superadmin
+  if (req.nextUrl.pathname.startsWith('/admin')) {
+    const { data: userData } = await supabase.auth.getUser();
+    const userRole = userData.user?.user_metadata?.role;
+    
+    if (userRole !== 'superadmin') {
+      const redirectUrl = new URL('/dashboard', req.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   return res;
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*'],
+  matcher: ['/admin/:path*', '/dashboard/:path*'],
 };
