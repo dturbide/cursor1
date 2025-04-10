@@ -38,7 +38,7 @@ export default function LoginForm() {
       } else {
         router.push('/dashboard/company')
       }
-    } catch (error) {
+    } catch (_error) {
       setError('Email ou mot de passe incorrect')
     } finally {
       setLoading(false)
