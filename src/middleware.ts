@@ -49,13 +49,11 @@ export async function middleware(req: NextRequest) {
 
   // Route de login superadmin
   if (req.nextUrl.pathname === '/auth/superadmin/login') {
-    if (session) {
-      if (userRole === 'superadmin') {
-        return NextResponse.redirect(new URL('/superadmin/dashboard', req.url));
-      }
-      // Si connecté mais pas superadmin, rediriger vers le dashboard standard
-      return NextResponse.redirect(new URL('/dashboard', req.url));
+    // Si l'utilisateur est déjà connecté et est un superadmin, rediriger vers le dashboard
+    if (session && userRole === 'superadmin') {
+      return NextResponse.redirect(new URL('/superadmin/dashboard', req.url));
     }
+    // Sinon, permettre l'accès à la page de connexion
     return res;
   }
 
