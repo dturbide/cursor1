@@ -19,8 +19,8 @@ export default function SuperAdminDashboard() {
       await supabase.auth.signOut();
       window.location.href = '/auth/login';
     } catch (error) {
-      console.error('Erreur de déconnexion:', error);
-      window.location.href = '/auth/login';
+      console.error('Erreur lors de la déconnexion:', error);
+      window.location.reload();
     }
   };
 
@@ -72,7 +72,7 @@ export default function SuperAdminDashboard() {
               <div className="text-sm opacity-75">
                 {user?.email}
               </div>
-              {/* Bouton de déconnexion intégré */}
+              {/* Bouton de déconnexion */}
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}
