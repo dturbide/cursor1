@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface CustomError extends Error {
@@ -16,7 +15,6 @@ export default function SuperAdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState(false);
-  const router = useRouter();
   const supabase = createClientComponentClient();
 
   // Vérifier si l'utilisateur est déjà connecté
@@ -36,7 +34,7 @@ export default function SuperAdminLoginPage() {
       }
     };
     checkSession();
-  }, []);
+  }, [supabase]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
