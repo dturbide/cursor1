@@ -13,7 +13,7 @@ export default function VerifyEmailPage() {
           <div className="mt-4 text-gray-600">
             <p>Un email de confirmation a été envoyé à votre adresse.</p>
             <p className="mt-2">
-              Veuillez cliquer sur le lien dans l'email pour activer votre compte.
+              Veuillez cliquer sur le lien dans l&apos;email pour activer votre compte.
             </p>
           </div>
           <div className="mt-6">

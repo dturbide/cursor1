@@ -85,8 +85,11 @@ export default function RegisterPage() {
         );
         router.push('/auth/verify-email');
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Une erreur est survenue lors de l\'inscription');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Une erreur est survenue lors de l\'inscription';
+      toast.error(errorMessage);
       console.error('Registration error:', error);
     } finally {
       setIsLoading(false);
