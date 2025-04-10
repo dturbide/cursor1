@@ -9,7 +9,7 @@ export async function POST() {
   await supabase.auth.signOut();
   
   // Créer une nouvelle réponse avec redirection
-  const response = NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'));
+  const response = NextResponse.redirect('https://cursor1-one.vercel.app/');
   
   // Effacer explicitement les cookies de session
   response.cookies.delete('sb-access-token');
