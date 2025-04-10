@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Session } from '@supabase/supabase-js';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function LandingPage() {
   // Typé correctement pour éviter le problème de compilation
@@ -100,4 +99,9 @@ export default function LandingPage() {
       </div>
     </div>
   )
+}
+
+export const metadata = {
+  title: 'Éditeur de Base de Données IA | Dashboard',
+  description: 'Utilisez l\'IA pour modifier votre base de données Supabase avec des instructions en langage naturel',
 } 

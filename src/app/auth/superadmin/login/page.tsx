@@ -41,8 +41,8 @@ export default function SuperAdminLoginPage() {
 
       // Redirection vers le tableau de bord superadmin
       router.push('/superadmin/dashboard');
-    } catch (error: any) {
-      setError(error.message || 'Une erreur est survenue lors de la connexion.');
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Une erreur est survenue lors de la connexion.');
     } finally {
       setLoading(false);
     }

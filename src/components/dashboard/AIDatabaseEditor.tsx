@@ -38,7 +38,9 @@ export default function AIDatabaseEditor() {
       })
       
       if (error) {
-        setError(error.message || 'Une erreur est survenue')
+        setError(typeof error === 'object' && error !== null && 'message' in error 
+          ? error.message as string 
+          : 'Une erreur est survenue')
       } else if (data) {
         setResponse(data as AIResponse)
       }
@@ -122,7 +124,7 @@ export default function AIDatabaseEditor() {
               rows={4}
               required
               className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="Ex: Crée une table 'produits' avec des champs pour nom, prix et description"
+              placeholder="Ex: Crée une table &apos;produits&apos; avec des champs pour nom, prix et description"
             />
           </div>
           
