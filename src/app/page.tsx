@@ -3,23 +3,27 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { Session } from '@supabase/supabase-js';
 
 export default function LandingPage() {
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
+  // Typé correctement pour éviter le problème de compilation
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getSession() {
-      const { data } = await supabase.auth.getSession()
-      setSession(data.session)
-      setLoading(false)
+      const { data } = await supabase.auth.getSession();
+      // Explicitement typé pour résoudre l'erreur de compilation
+      const userSession: Session | null = data.session;
+      setSession(userSession);
+      setLoading(false);
     }
-    getSession()
-  }, [])
+    getSession();
+  }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    window.location.reload()
+    await supabase.auth.signOut();
+    window.location.reload();
   }
 
   if (loading) {
@@ -77,7 +81,22 @@ export default function LandingPage() {
             </button>
           </div>
         </div>
+
+        <p className="mt-8 text-center text-base text-gray-500">
+          <Link
+            href="/auth/login"
+            className="font-medium text-indigo-600 hover:text-indigo-500 mr-4"
+          >
+            Se connecter au compte standard
+          </Link>
+          <Link
+            href="/auth/superadmin/login"
+            className="font-medium text-purple-600 hover:text-purple-500"
+          >
+            Accès Super Admin
+          </Link>
+        </p>
       </div>
     </div>
   )
-}
+} 
