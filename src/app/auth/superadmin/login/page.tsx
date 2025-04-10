@@ -21,63 +21,61 @@ export default function SuperAdminLoginPage() {
     try {
       console.log('Tentative de connexion pour:', email);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // 1. Connexion avec Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        console.error('Erreur de connexion:', error);
-        throw error;
+      if (authError) {
+        console.error('Erreur d\'authentification:', authError);
+        throw new Error('Erreur d\'authentification: ' + authError.message);
       }
 
-      console.log('Connexion réussie, vérification du rôle...');
-      console.log('User ID:', data.user.id);
-
-      // Vérification de la structure de la table
-      const { data: tableInfo, error: tableError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .limit(1);
-
-      if (tableError) {
-        console.error('Erreur lors de la vérification de la table:', tableError);
-        throw new Error('Erreur lors de la vérification de la table user_profiles');
+      if (!authData?.user) {
+        console.error('Aucun utilisateur retourné après authentification');
+        throw new Error('Erreur d\'authentification: aucun utilisateur trouvé');
       }
 
-      console.log('Structure de la table:', tableInfo);
-
-      // Vérification du rôle superadmin
-      const { data: userData, error: userError } = await supabase
+      console.log('Authentification réussie, vérification du rôle...');
+      
+      // 2. Vérification du rôle dans user_profiles
+      const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('email', email)
         .single();
 
-      if (userError) {
-        console.error('Erreur lors de la vérification du rôle:', userError);
-        throw userError;
+      if (profileError) {
+        console.error('Erreur lors de la vérification du profil:', profileError);
+        throw new Error('Erreur lors de la vérification du profil: ' + profileError.message);
       }
 
-      console.log('Données utilisateur:', userData);
-
-      if (!userData) {
-        console.error('Aucune donnée utilisateur trouvée');
+      if (!profileData) {
+        console.error('Aucun profil trouvé pour cet utilisateur');
         throw new Error('Profil utilisateur non trouvé');
       }
 
-      if (userData.role !== 'superadmin') {
-        console.error('Rôle non autorisé:', userData.role);
+      console.log('Profil trouvé:', profileData);
+
+      if (profileData.role !== 'superadmin') {
+        console.error('Rôle incorrect:', profileData.role);
         await supabase.auth.signOut();
         throw new Error('Accès non autorisé. Seuls les super administrateurs peuvent se connecter ici.');
       }
 
       console.log('Rôle superadmin confirmé, redirection...');
-      // Redirection vers le tableau de bord superadmin
       router.push('/superadmin/dashboard');
-    } catch (error: unknown) {
+      
+    } catch (error: any) {
       console.error('Erreur complète:', error);
-      setError(error instanceof Error ? error.message : 'Une erreur est survenue lors de la connexion.');
+      setError(error?.message || 'Une erreur est survenue lors de la connexion.');
+      // En cas d'erreur, on essaie de se déconnecter pour être sûr
+      try {
+        await supabase.auth.signOut();
+      } catch (signOutError) {
+        console.error('Erreur lors de la déconnexion:', signOutError);
+      }
     } finally {
       setLoading(false);
     }
@@ -97,8 +95,8 @@ export default function SuperAdminLoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-purple-800">
           {error && (
-            <div className="mb-4 bg-red-900/40 border border-red-600 text-red-300 px-4 py-3 rounded">
-              <p>{error}</p>
+            <div className="mb-4 bg-red-900/40 border border-red-600 text-red-300 px-4 py-3 rounded relative">
+              <span className="block sm:inline">{error}</span>
             </div>
           )}
 
