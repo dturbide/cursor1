@@ -132,15 +132,17 @@ export default function DashboardSidebar() {
       </nav>
       
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <Link
-          href="/logout"
-          className="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/30"
-        >
-          <span className="mr-3">
-            <i className="icon-logout" aria-hidden="true"></i>
-          </span>
-          <span>Déconnexion</span>
-        </Link>
+        <form action="/auth/signout" method="post">
+          <button
+            type="submit"
+            className="flex items-center w-full p-2 text-gray-600 rounded-md hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/30"
+          >
+            <span className="mr-3">
+              <i className="icon-logout" aria-hidden="true"></i>
+            </span>
+            <span>Déconnexion</span>
+          </button>
+        </form>
       </div>
     </div>
   )
