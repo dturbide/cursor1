@@ -99,9 +99,4 @@ export default function LandingPage() {
       </div>
     </div>
   )
-}
-
-export const metadata = {
-  title: 'Éditeur de Base de Données IA | Dashboard',
-  description: 'Utilisez l\'IA pour modifier votre base de données Supabase avec des instructions en langage naturel',
 } 
