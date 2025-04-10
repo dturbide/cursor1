@@ -14,8 +14,8 @@ export async function POST() {
       throw error;
     }
     
-    // Rediriger directement vers la page de connexion superadmin
-    const response = NextResponse.redirect(new URL('/auth/superadmin/login', 'https://cursor1-one.vercel.app'));
+    // Rediriger vers la page de connexion standard
+    const response = NextResponse.redirect(new URL('/auth/login', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'));
     
     // Effacer explicitement les cookies de session
     response.cookies.delete('sb-access-token');
@@ -25,11 +25,11 @@ export async function POST() {
   } catch (error) {
     console.error('Erreur lors de la déconnexion:', error);
     // En cas d'erreur, rediriger quand même vers la page de connexion
-    return NextResponse.redirect(new URL('/auth/superadmin/login', 'https://cursor1-one.vercel.app'));
+    return NextResponse.redirect(new URL('/auth/login', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'));
   }
 }
 
 // Ajouter la méthode GET pour gérer les redirections
 export async function GET() {
-  return NextResponse.redirect(new URL('/auth/superadmin/login', 'https://cursor1-one.vercel.app'));
+  return NextResponse.redirect(new URL('/auth/login', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'));
 } 

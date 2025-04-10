@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import LogoutButton from '../auth/LogoutButton'
 
 type NavItem = {
   name: string
@@ -83,12 +85,11 @@ export default function DashboardSidebar() {
     : navigation.filter(item => item.roles.includes(userRole))
 
   return (
-    <div className="h-full flex flex-col bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Mon Application</h2>
+    <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg">
+      <div className="p-4">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Dashboard</h2>
       </div>
-      
-      <nav className="flex-1 overflow-y-auto p-4">
+      <nav className="mt-4">
         <ul className="space-y-2">
           {filteredNavigation.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
@@ -130,20 +131,9 @@ export default function DashboardSidebar() {
           </div>
         )}
       </nav>
-      
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <form action="/auth/signout" method="post">
-          <button
-            type="submit"
-            className="flex items-center w-full p-2 text-gray-600 rounded-md hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/30"
-          >
-            <span className="mr-3">
-              <i className="icon-logout" aria-hidden="true"></i>
-            </span>
-            <span>Déconnexion</span>
-          </button>
-        </form>
+        <LogoutButton />
       </div>
-    </div>
+    </aside>
   )
 } 

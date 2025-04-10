@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
+import LogoutButton from '@/components/auth/LogoutButton';
 
 export default async function SuperAdminDashboard() {
   const supabase = createServerComponentClient({ cookies });
@@ -35,26 +36,20 @@ export default async function SuperAdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-purple-300">
-                SUPER ADMIN
-              </span>
-              <span className="ml-4 text-sm bg-purple-700 px-3 py-1 rounded-full">
-                VERSION SYSTÈME
-              </span>
+              <div className="flex items-center gap-4">
+                <span className="text-2xl font-bold text-purple-300">
+                  SUPER ADMIN
+                </span>
+                <span className="ml-4 text-sm bg-purple-700 px-3 py-1 rounded-full">
+                  v0.1.0
+                </span>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-sm opacity-75">
                 {user?.email}
               </div>
-              {/* Bouton de déconnexion */}
-              <form action="/api/auth/logout" method="post">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition"
-                >
-                  Déconnexion
-                </button>
-              </form>
+              <LogoutButton />
             </div>
           </div>
         </div>

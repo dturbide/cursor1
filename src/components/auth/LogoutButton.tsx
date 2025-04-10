@@ -14,12 +14,12 @@ export default function LogoutButton() {
       // Déconnexion directe côté client
       await supabase.auth.signOut();
       
-      // Redirection directe vers la page de connexion
-      window.location.href = 'https://cursor1-one.vercel.app/auth/superadmin/login';
+      // Redirection vers la page de login (sans hardcoder le domaine)
+      window.location.href = '/auth/login';
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
       // En cas d'erreur, rediriger quand même
-      window.location.href = 'https://cursor1-one.vercel.app/auth/superadmin/login';
+      window.location.href = '/auth/login';
     }
   };
 
