@@ -8,8 +8,8 @@ export async function POST() {
   // Déconnexion de Supabase
   await supabase.auth.signOut();
   
-  // Créer une nouvelle réponse avec redirection
-  const response = NextResponse.redirect('https://cursor1-one.vercel.app/');
+  // Créer une nouvelle réponse avec redirection vers la page de connexion superadmin
+  const response = NextResponse.redirect('https://cursor1-one.vercel.app/auth/superadmin/login');
   
   // Effacer explicitement les cookies de session
   response.cookies.delete('sb-access-token');
