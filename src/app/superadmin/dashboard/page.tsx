@@ -47,7 +47,7 @@ export default async function SuperAdminDashboard() {
                 {user?.email}
               </div>
               {/* Bouton de déconnexion */}
-              <form action="https://cursor1-one.vercel.app/auth/signout" method="post">
+              <form action="/api/auth/signout" method="post">
                 <button
                   type="submit"
                   className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-sm transition"
