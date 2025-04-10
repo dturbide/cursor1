@@ -35,12 +35,12 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Pour les routes superadmin, vérifier le rôle dans la table profiles
+  // Pour les routes superadmin, vérifier le rôle dans la table user_profiles
   if (session && req.nextUrl.pathname.startsWith('/superadmin')) {
     try {
-      // Récupérer le rôle depuis la table profiles
+      // Récupérer le rôle depuis la table user_profiles
       const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('role')
         .eq('id', session.user.id)
         .single();

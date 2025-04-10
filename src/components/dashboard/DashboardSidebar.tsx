@@ -19,11 +19,17 @@ export default function DashboardSidebar() {
 
   useEffect(() => {
     async function getUserRole() {
+      if (!supabase) {
+        console.error('Supabase client is not initialized');
+        setLoading(false);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession()
       
       if (session) {
         const { data } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('role')
           .eq('id', session.user.id)
           .single()
