@@ -1,4 +1,5 @@
 import LoginForm from '@/components/auth/LoginForm';
+import Link from 'next/link';
 
 export default function LoginPage() {
   return (
@@ -17,12 +18,12 @@ export default function LoginPage() {
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
                   Ou{' '}
-                  <a
+                  <Link
                     href="/auth/register"
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
                     créer un compte
-                  </a>
+                  </Link>
                 </span>
               </div>
             </div>

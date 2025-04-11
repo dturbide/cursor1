@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import Link from 'next/link';
 
 export default async function AdminDashboard() {
   const supabase = createServerComponentClient({ cookies });
@@ -64,12 +65,12 @@ export default async function AdminDashboard() {
         </div>
         
         <div className="flex space-x-4">
-          <a
+          <Link
             href="/dashboard"
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
           >
             Retour au tableau de bord
-          </a>
+          </Link>
           
           <form action="/auth/signout" method="post">
             <button

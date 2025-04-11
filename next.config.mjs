@@ -1,3 +1,7 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -6,7 +10,7 @@ const nextConfig = {
   output: 'standalone',
   swcMinify: true,
   experimental: {
-    serverComponentsExternalPackages: ['next-intl']
+    serverExternalPackages: ['next-intl']
   },
   i18n: {
     locales: ['fr', 'en'],
@@ -15,4 +19,4 @@ const nextConfig = {
   }
 };
 
-export default nextConfig; 
+export default withNextIntl(nextConfig); 

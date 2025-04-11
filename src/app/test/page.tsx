@@ -11,7 +11,7 @@ export default function TestPage() {
       
       <div className="flex flex-col space-y-2 mt-8">
         <Link href="/" className="text-blue-500 hover:underline">
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Link>
       </div>
     </div>
