@@ -2,15 +2,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/config';
+import { createClient } from '@/lib/supabase/client';
 import { AuthError } from '@supabase/supabase-js';
 
-export default function AuthForm() {
+interface AuthFormProps {
+  className?: string;
+}
+
+export default function AuthForm({ className = '' }: AuthFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient;
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +39,7 @@ export default function AuthForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={`space-y-4 ${className}`}>
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email

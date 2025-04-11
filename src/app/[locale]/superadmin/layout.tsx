@@ -1,6 +1,6 @@
 import { generateI18nStaticParams } from '@/lib/i18n';
 import { unstable_setRequestLocale } from 'next-intl/server';
-import { createServerComponentClient } from '@/lib/supabase/config';
+import { createServerComponentClient } from '@/lib/supabase/server';
 import { DashboardShell } from '@/components/dashboard-shell';
 import { SuperAdminNav } from '@/components/superadmin-nav';
 

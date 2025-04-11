@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/config';
+import { createClient } from '@/lib/supabase/client';
 import type { UserProfile } from '@/types/supabase';
 
 export function useAuth() {
   const router = useRouter();
-  const supabase = createClient;
+  const supabase = createClient();
   const locale = useLocale();
 
   const signOut = async () => {

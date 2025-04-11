@@ -11,7 +11,7 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react"
-import { createClient } from '@/lib/supabase/config'
+import { createClient } from '@/lib/supabase/client'
 import type { UserProfile } from '@/types/supabase'
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
@@ -37,23 +37,30 @@ export default function UserManagement() {
 
   const fetchUsers = useCallback(async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Non autorisé');
+      }
+
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
-      if (error) throw error
-      setUsers(data || [])
+      if (error) throw error;
+      setUsers(data || []);
     } catch (error) {
       if (error instanceof Error) {
-        setError(error.message)
+        setError(error.message);
+        toast.error(error.message);
       } else {
-        setError('Une erreur est survenue')
+        setError('Une erreur est survenue lors du chargement des utilisateurs');
+        toast.error('Une erreur est survenue lors du chargement des utilisateurs');
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [supabase])
+  }, [supabase]);
 
   useEffect(() => {
     fetchUsers()
