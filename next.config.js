@@ -20,6 +20,12 @@ const nextConfig = {
   },
   // Désactiver la compression pour faciliter le débogage
   compress: false,
+  // Bloquer le prérendu statique pour certaines pages
+  exportPathMap: async function() {
+    return {
+      '/': { page: '/' },
+    };
+  },
 };
 
 module.exports = nextConfig; 

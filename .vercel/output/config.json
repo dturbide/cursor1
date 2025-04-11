@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "routes": [
+    { "src": "/organizations", "dest": "/api/force-dynamic" },
+    { "src": "/logs", "dest": "/api/force-dynamic" },
+    { "src": "/users", "dest": "/api/force-dynamic" },
+    { "src": "/payments", "dest": "/api/force-dynamic" },
+    { "src": "/reminders", "dest": "/api/force-dynamic" }
+  ],
+  "overrides": {
+    "engines": {
+      "node": "18.x"
+    }
+  }
+} 

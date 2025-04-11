@@ -1,6 +1,10 @@
 # Ignorer les pages qui posent problème de prérendu
-src/app/organizations
-src/app/logs
-src/app/users
-src/app/payments
-src/app/reminders 
+src/app/organizations/page.tsx
+src/app/logs/page.tsx
+src/app/users/page.tsx
+src/app/payments/page.tsx
+src/app/reminders/page.tsx
+
+# Ignorer les répertoires de build
+.next
+node_modules 
