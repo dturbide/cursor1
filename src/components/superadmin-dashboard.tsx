@@ -4,19 +4,9 @@ import { useEffect, useState } from "react"
 import { 
   Card, 
   CardContent, 
-  CardDescription, 
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { 
-  Users,
-  ShieldAlert,
-  FileText,
-  Settings,
-  AlertCircle,
-  CheckCircle
-} from "lucide-react"
 
 interface Stats {
   totalUsers: number
@@ -27,7 +17,7 @@ interface Stats {
 }
 
 export function SuperAdminDashboard() {
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
