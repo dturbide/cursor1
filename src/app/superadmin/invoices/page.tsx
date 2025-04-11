@@ -54,7 +54,7 @@ export default async function InvoicesPage() {
     .order('created_at', { ascending: false });
 
   // Récupérer les statistiques de facturation
-  const { data: stats, error: statsError } = await supabase
+  const { data: stats } = await supabase
     .from('invoices')
     .select('status');
 

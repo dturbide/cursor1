@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { AlertTriangle, Lock, LogIn, ShieldAlert, ShieldCheck, UserX } from 'lucide-react';
+import { AlertTriangle, Lock, LogIn, ShieldCheck, UserX } from 'lucide-react';
 
 import {
   Table,
