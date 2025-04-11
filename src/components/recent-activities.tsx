@@ -85,7 +85,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
   const getRelativeTime = (dateString: string) => {
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: fr });
-    } catch (_) {
+    } catch {
       return 'Date inconnue';
     }
   };
