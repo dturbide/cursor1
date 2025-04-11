@@ -151,7 +151,7 @@ export default async function AnalyticsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{usersByRole?.admin || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Administrateurs d'organisation
+              Administrateurs d&apos;organisation
             </p>
           </CardContent>
         </Card>
