@@ -1,118 +1,101 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import createIntlMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './src/i18n/settings';
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+import { match } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
+import { locales } from './i18n/settings'
 
-// Créer le middleware d'internationalisation
-const intlMiddleware = createIntlMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'as-needed'
-});
+let defaultLocale = 'en'
 
-export async function middleware(req: NextRequest) {
-  // Gérer d'abord l'internationalisation
-  const response = intlMiddleware(req);
-  
-  // Extraire la locale de l'URL
-  const locale = req.nextUrl.pathname.split('/')[1] || defaultLocale;
-  
-  // Configurer le client Supabase
-  const supabase = createMiddlewareClient({ req, res: response });
+function getLocale(request: NextRequest): string {
+  const negotiatorHeaders: Record<string, string> = {}
+  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
 
-  // Ajouter des en-têtes CSP pour autoriser eval
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co; img-src 'self' data:; font-src 'self' data:;"
-  );
+  // @ts-ignore locales are readonly
+  const languages = new Negotiator({ headers: negotiatorHeaders }).languages()
+  const locale = match(languages, locales, defaultLocale)
+  return locale
+}
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
 
-  // Logging pour le débogage
-  console.log('Middleware path:', req.nextUrl.pathname);
-  console.log('Session exists:', !!session);
-  console.log('Current locale:', locale);
-
-  // Si l'utilisateur est connecté, récupérer son rôle
-  let userRole = null;
-  if (session) {
-    try {
-      const { data: profileData, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-      if (!profileError && profileData) {
-        userRole = profileData.role;
-        console.log('User role:', userRole);
-      } else {
-        console.error('Error fetching user role:', profileError);
-      }
-    } catch (error) {
-      console.error('Error in role check:', error);
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
     }
+  )
+
+  const { data: { session } } = await supabase.auth.getSession()
+
+  const pathname = request.nextUrl.pathname
+
+  // Redirect if no locale is present in the pathname
+  if (!locales.some(locale => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`)) {
+    const locale = getLocale(request)
+    return NextResponse.redirect(
+      new URL(
+        `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
+        request.url
+      )
+    )
   }
 
-  // Routes publiques (accessibles uniquement si NON authentifié)
-  if ([`/${locale}/auth/login`, `/${locale}/auth/register`].includes(req.nextUrl.pathname)) {
-    if (session) {
-      // Rediriger vers le dashboard approprié selon le rôle
-      if (userRole === 'superadmin') {
-        return NextResponse.redirect(new URL(`/${locale}/superadmin/dashboard`, req.url));
-      }
-      return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
-    }
-    return response;
-  }
-
-  // Route de login superadmin
-  if (req.nextUrl.pathname === `/${locale}/auth/superadmin/login`) {
-    // Si l'utilisateur est déjà connecté et est un superadmin, rediriger vers le dashboard
-    if (session && userRole === 'superadmin') {
-      return NextResponse.redirect(new URL(`/${locale}/superadmin/dashboard`, req.url));
-    }
-    // Sinon, permettre l'accès à la page de connexion
-    return response;
-  }
-
-  // Rediriger vers login si pas de session pour toutes les routes protégées
-  if (!session) {
-    // Redirection spéciale pour les routes superadmin
-    if (req.nextUrl.pathname.startsWith(`/${locale}/superadmin`)) {
-      return NextResponse.redirect(new URL(`/${locale}/auth/superadmin/login`, req.url));
-    }
-    
-    // Redirection standard pour les autres routes protégées
-    if (!req.nextUrl.pathname.startsWith('/_next') && 
-        !req.nextUrl.pathname.startsWith('/api') && 
-        !req.nextUrl.pathname.startsWith(`/${locale}/auth`)) {
-      return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
-    }
-  }
-
-  // Protection des routes superadmin
-  if (req.nextUrl.pathname.startsWith(`/${locale}/superadmin`)) {
-    if (userRole !== 'superadmin') {
-      console.log('Tentative d\'accès non autorisé à une route superadmin');
-      return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
-    }
-  }
-
-  // Protection des routes dashboard standard
-  if (req.nextUrl.pathname.startsWith(`/${locale}/dashboard`)) {
-    if (!userRole) {
-      console.log('Utilisateur sans rôle défini');
-      return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
-    }
-  }
-
-  return response;
+  return response
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/).*)']
-}; 
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+} 
