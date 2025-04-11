@@ -210,7 +210,7 @@ export function AnalyticsDashboard() {
             <CardContent>
               <div className="space-y-4">
                 <div className="bg-slate-50 p-3 rounded-md">
-                  <p className="text-sm font-medium">Taux d'activité</p>
+                  <p className="text-sm font-medium">Taux d&apos;activité</p>
                   <p className="text-2xl font-bold">
                     {stats?.totalUsers ? Math.round((stats.activeUsers / stats.totalUsers) * 100) : 0}%
                   </p>
@@ -220,11 +220,11 @@ export function AnalyticsDashboard() {
                 </div>
                 
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Statistiques d'accès récentes</p>
+                  <p className="text-sm font-medium">Statistiques d&apos;accès récentes</p>
                   <ul className="space-y-1">
                     <li className="text-sm text-muted-foreground">Dernière connexion: il y a 10 minutes</li>
                     <li className="text-sm text-muted-foreground">Moyenne des connexions: 42 par jour</li>
-                    <li className="text-sm text-muted-foreground">Pics d'activité: 10h-12h et 14h-16h</li>
+                    <li className="text-sm text-muted-foreground">Pics d&apos;activité: 10h-12h et 14h-16h</li>
                   </ul>
                 </div>
               </div>

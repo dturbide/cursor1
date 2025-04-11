@@ -1,7 +1,6 @@
 "use client"
 
 import { ReactNode } from "react"
-import { cn } from "@/lib/utils"
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 

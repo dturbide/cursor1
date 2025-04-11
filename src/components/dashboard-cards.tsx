@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from '@/lib/supabase/config'
 import { 
   Card, 
   CardContent, 
@@ -24,7 +23,6 @@ export function DashboardCards() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
 
   useEffect(() => {
     const fetchStats = async () => {
