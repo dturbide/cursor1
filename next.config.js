@@ -4,13 +4,22 @@ const nextConfig = {
     // ⚠️ DANGEREUX: Ignorer les erreurs de compilation TypeScript durant la phase de build
     ignoreBuildErrors: true,
   },
-  // Désactiver le prérendu statique
+  // Configuration pour la génération
   output: 'standalone',
-  // Configuration supplémentaire pour désactiver le prérendu statique
+  staticPageGenerationTimeout: 0,
   experimental: {
+    // Désactiver les optimisations qui peuvent causer des problèmes
     workerThreads: false,
-    cpus: 1
+    cpus: 1,
+    disableOptimizedLoading: true,
+    disableStaticImages: true,
   },
+  // Désactiver l'exportation statique pour la phase de build
+  images: {
+    unoptimized: true,
+  },
+  // Désactiver la compression pour faciliter le débogage
+  compress: false,
 };
 
 module.exports = nextConfig; 

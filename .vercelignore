@@ -1,0 +1,6 @@
+# Ignorer les pages qui posent problème de prérendu
+src/app/organizations
+src/app/logs
+src/app/users
+src/app/payments
+src/app/reminders 

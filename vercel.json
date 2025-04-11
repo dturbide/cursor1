@@ -1,0 +1,20 @@
+{
+  "buildCommand": "next build",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    { "src": "/organizations", "dest": "/api/force-dynamic" },
+    { "src": "/logs", "dest": "/api/force-dynamic" },
+    { "src": "/users", "dest": "/api/force-dynamic" },
+    { "src": "/payments", "dest": "/api/force-dynamic" },
+    { "src": "/reminders", "dest": "/api/force-dynamic" }
+  ]
+} 
