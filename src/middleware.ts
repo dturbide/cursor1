@@ -2,20 +2,8 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
-import { Negotiator } from 'negotiator';
-import { match } from '@formatjs/intl-localematcher';
 
 const publicPages = ['/', '/auth/login', '/auth/register'];
-
-function getLocale(request: NextRequest): string {
-  const negotiatorHeaders: Record<string, string> = {}
-  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
-
-  // @ts-ignore locales are readonly
-  const languages = new Negotiator({ headers: negotiatorHeaders }).languages()
-  const locale = match(languages, locales, defaultLocale)
-  return locale
-}
 
 const intlMiddleware = createIntlMiddleware({
   locales,
