@@ -1,13 +1,13 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import createMiddleware from 'next-intl/middleware';
+import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
 
 // Liste des pages publiques (sans le préfixe de locale)
-const publicPages = ['/', '/auth/login', '/auth/register'];
+const publicPages = ['/auth/login', '/auth/register'];
 
-// Créer le middleware d'internationalisation
-const intlMiddleware = createMiddleware({
+// Create the internationalization middleware
+const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'always'
@@ -16,12 +16,9 @@ const intlMiddleware = createMiddleware({
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
-  // Gérer d'abord l'internationalisation
-  const response = intlMiddleware(request);
+  // Handle i18n first
+  let response = intlMiddleware(request);
   
-  // Extraire la locale du chemin
-  const pathnameWithoutLocale = pathname.replace(/^\/(?:fr|en)/, '');
-
   // Create a Supabase client configured to use cookies
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,47 +29,78 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
+          // If we're on a secure connection, ensure the cookie is secure
+          if (request.url.startsWith('https://')) {
+            options.secure = true;
+          }
+          response.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
+          response.cookies.set({ name, value: '', ...options });
         },
       },
     }
   );
 
+  // Get the session
   const { data: { session } } = await supabase.auth.getSession();
 
-  // Si la page est publique, on laisse passer
-  if (publicPages.includes(pathnameWithoutLocale)) {
+  // Get the locale from the pathname
+  const locale = pathname.split('/')[1] || defaultLocale;
+  const pathnameWithoutLocale = pathname.replace(new RegExp(`^/(${locales.join('|')})`), '');
+
+  // Allow public pages
+  if (publicPages.some(page => pathnameWithoutLocale.startsWith(page))) {
     return response;
   }
 
-  // Si l'utilisateur n'est pas connecté et essaie d'accéder à une page protégée
+  // Check authentication for protected routes
   if (!session && !pathnameWithoutLocale.startsWith('/auth')) {
-    const locale = request.nextUrl.pathname.split('/')[1] || defaultLocale;
     const redirectUrl = new URL(`/${locale}/auth/login`, request.url);
+    redirectUrl.searchParams.set('redirectTo', request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Si l'utilisateur est connecté et essaie d'accéder aux pages d'auth
+  // Redirect authenticated users away from auth pages
   if (session && pathnameWithoutLocale.startsWith('/auth')) {
-    const locale = request.nextUrl.pathname.split('/')[1] || defaultLocale;
-    const redirectUrl = new URL(`/${locale}/dashboard`, request.url);
-    return NextResponse.redirect(redirectUrl);
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
+
+  // Handle superadmin routes
+  if (pathnameWithoutLocale.startsWith('/superadmin')) {
+    if (!session) {
+      const redirectUrl = new URL(`/${locale}/auth/login`, request.url);
+      redirectUrl.searchParams.set('redirectTo', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // Check superadmin role
+    const { data: userProfile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!userProfile || userProfile.role !== 'superadmin') {
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+    }
   }
 
   return response;
 }
 
+// Configurer le matcher pour inclure toutes les routes nécessaires
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  matcher: [
+    // Routes protégées par l'authentification
+    '/dashboard/:path*',
+    '/settings/:path*',
+    // Routes superadmin
+    '/superadmin/:path*',
+    '/:locale/superadmin/:path*',
+    // Routes d'authentification
+    '/auth/:path*',
+    // Routes i18n
+    '/((?!api|_next|_vercel|.*\\..*).*)',
+  ]
 }; 

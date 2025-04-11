@@ -1,11 +1,12 @@
-import { getTranslations } from 'next-intl/server';
-import { Link } from 'next-intl';
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { Link } from '@/navigation';
 
 type Props = {
   params: { locale: string }
 };
 
 export default async function LocalizedHome({ params: { locale } }: Props) {
+  unstable_setRequestLocale(locale);
   const t = await getTranslations('Home');
 
   return (

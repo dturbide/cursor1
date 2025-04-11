@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { locales, Locale } from '@/i18n/config';
+import { unstable_setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -32,6 +33,8 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  unstable_setRequestLocale(locale);
+
   if (!locales.includes(locale as Locale)) {
     notFound();
   }

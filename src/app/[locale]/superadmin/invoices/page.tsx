@@ -2,12 +2,11 @@ import { Metadata } from 'next';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { DashboardShell } from '@/components/dashboard-shell';
 import { DashboardHeader } from '@/components/dashboard-header';
-import { AnalyticsDashboard } from '@/components/analytics-dashboard';
 import { generateI18nStaticParams } from '@/lib/i18n';
 
 export const metadata: Metadata = {
-  title: 'Analytics',
-  description: 'Analytics and statistics',
+  title: 'Invoices',
+  description: 'Manage invoices',
 };
 
 export async function generateStaticParams() {
@@ -18,9 +17,9 @@ type Props = {
   params: { locale: string }
 };
 
-export default async function AnalyticsPage({ params: { locale } }: Props) {
+export default async function InvoicesPage({ params: { locale } }: Props) {
   unstable_setRequestLocale(locale);
-  const t = await getTranslations('Analytics');
+  const t = await getTranslations('Invoices');
 
   return (
     <DashboardShell>
@@ -29,7 +28,7 @@ export default async function AnalyticsPage({ params: { locale } }: Props) {
         text={t('description')}
       />
       <div className="grid gap-10">
-        <AnalyticsDashboard />
+        {/* Invoices content */}
       </div>
     </DashboardShell>
   );

@@ -11,6 +11,46 @@
     "profile": "Profil",
     "settings": "Paramètres"
   },
+  "Dashboard": {
+    "title": "Tableau de bord",
+    "description": "Vue d'ensemble de votre espace"
+  },
+  "Analytics": {
+    "title": "Analytiques",
+    "description": "Statistiques et analyses détaillées"
+  },
+  "Organizations": {
+    "title": "Organisations",
+    "description": "Gestion des organisations"
+  },
+  "Users": {
+    "title": "Utilisateurs",
+    "description": "Gestion des utilisateurs"
+  },
+  "Payments": {
+    "title": "Paiements",
+    "description": "Gestion des paiements"
+  },
+  "Logs": {
+    "title": "Journaux",
+    "description": "Journaux système"
+  },
+  "Reminders": {
+    "title": "Rappels",
+    "description": "Gestion des rappels"
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "description": "Paramètres système"
+  },
+  "Security": {
+    "title": "Sécurité",
+    "description": "Paramètres de sécurité"
+  },
+  "Invoices": {
+    "title": "Factures",
+    "description": "Gestion des factures"
+  },
   "SuperAdminDashboard": {
     "title": "Tableau de bord SuperAdmin",
     "description": "Vue globale de l'application et gestion des accès",

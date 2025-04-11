@@ -11,6 +11,46 @@
     "profile": "Profile",
     "settings": "Settings"
   },
+  "Dashboard": {
+    "title": "Dashboard",
+    "description": "Overview of your workspace"
+  },
+  "Analytics": {
+    "title": "Analytics",
+    "description": "Detailed statistics and analysis"
+  },
+  "Organizations": {
+    "title": "Organizations",
+    "description": "Manage organizations"
+  },
+  "Users": {
+    "title": "Users",
+    "description": "Manage users"
+  },
+  "Payments": {
+    "title": "Payments",
+    "description": "Manage payments"
+  },
+  "Logs": {
+    "title": "Logs",
+    "description": "System logs"
+  },
+  "Reminders": {
+    "title": "Reminders",
+    "description": "Manage reminders"
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "System settings"
+  },
+  "Security": {
+    "title": "Security",
+    "description": "Security settings"
+  },
+  "Invoices": {
+    "title": "Invoices",
+    "description": "Manage invoices"
+  },
   "SuperAdminDashboard": {
     "title": "SuperAdmin Dashboard",
     "description": "Global application view and access management",
