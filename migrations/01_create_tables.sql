@@ -150,4 +150,15 @@ USING (
 
 CREATE POLICY "Everyone can view system settings" 
 ON public.system_settings FOR SELECT 
-USING (true); 
+USING (true);
+
+CREATE TABLE IF NOT EXISTS public.user_profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email TEXT UNIQUE NOT NULL,
+    full_name TEXT,
+    role TEXT NOT NULL DEFAULT 'user',
+    preferred_language TEXT DEFAULT 'fr',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
+); 

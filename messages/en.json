@@ -1,0 +1,36 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password"
+  },
+  "admin": {
+    "company": {
+      "title": "Company Management",
+      "add": "Add Company",
+      "edit": "Edit Company",
+      "delete": "Delete Company",
+      "name": "Company Name",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "companies": "Companies",
+    "users": "Users",
+    "settings": "Settings"
+  }
+} 
