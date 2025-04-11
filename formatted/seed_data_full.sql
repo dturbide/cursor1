@@ -190,3 +190,9 @@ BEGIN
         -- Ou qu'il y a déjà un utilisateur bloqué
     END IF;
 END $$;
+
+-- Vérifier la structure actuelle de la table invoices
+SELECT column_name, data_type 
+FROM information_schema.columns 
+WHERE table_schema = 'public' 
+AND table_name = 'invoices';

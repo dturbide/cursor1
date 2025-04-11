@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
-          <Toaster position="top-right" />
+          <Toaster position="top-right" richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

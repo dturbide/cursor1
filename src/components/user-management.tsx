@@ -29,6 +29,10 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { AddSuperAdminDialog } from "./add-super-admin-dialog"
+import { EditUserDialog } from "./edit-user-dialog"
+import { DeleteUserDialog } from "./delete-user-dialog"
+import { toast } from "sonner"
 
 interface UserProfile {
   id: string
@@ -47,29 +51,36 @@ export function UserManagement() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const supabase = createClientComponentClient()
 
-  useEffect(() => {
-    async function fetchUsers() {
-      setLoading(true)
-      try {
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          
-        if (error) {
-          console.error('Erreur lors de la récupération des utilisateurs:', error)
-          return
-        }
+  // Fonction pour charger les utilisateurs
+  const fetchUsers = async () => {
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        // Optionnel: n'afficher que les utilisateurs non supprimés si votre table a cette colonne
+        .is('deleted', null)
         
-        setUsers(data || [])
-      } catch (error) {
-        console.error('Erreur:', error)
-      } finally {
-        setLoading(false)
+      if (error) {
+        console.error('Erreur lors de la récupération des utilisateurs:', error)
+        return
       }
+      
+      setUsers(data || [])
+    } catch (error) {
+      console.error('Erreur:', error)
+    } finally {
+      setLoading(false)
     }
-    
+  }
+  
+  useEffect(() => {
     fetchUsers()
   }, [supabase])
 
@@ -147,6 +158,7 @@ export function UserManagement() {
       
       if (error) {
         console.error('Erreur lors de la mise à jour du statut:', error)
+        toast.error("Erreur lors de la mise à jour du statut")
         return
       }
       
@@ -154,16 +166,34 @@ export function UserManagement() {
       setUsers(users.map(user => 
         user.id === userId ? { ...user, is_active: !currentStatus } : user
       ))
+      
+      toast.success(`Utilisateur ${!currentStatus ? 'activé' : 'désactivé'} avec succès`)
     } catch (error) {
       console.error('Erreur:', error)
+      toast.error("Une erreur s'est produite")
     }
+  }
+
+  // Gestionnaires pour les actions d'édition
+  const handleEditClick = (user: UserProfile) => {
+    setEditingUser(user)
+    setIsEditDialogOpen(true)
+  }
+
+  // Gestionnaire pour l'action de suppression
+  const handleDeleteClick = (user: UserProfile) => {
+    setDeletingUser(user)
+    setIsDeleteDialogOpen(true)
   }
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Liste des utilisateurs</CardTitle>
-        <CardDescription>Gérez les utilisateurs de votre application et leurs rôles</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Liste des utilisateurs</CardTitle>
+          <CardDescription>Gérez les utilisateurs de votre application et leurs rôles</CardDescription>
+        </div>
+        <AddSuperAdminDialog onSuccess={fetchUsers} />
       </CardHeader>
       <CardContent>
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -252,7 +282,7 @@ export function UserManagement() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditClick(user)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Modifier
                           </DropdownMenuItem>
@@ -270,7 +300,7 @@ export function UserManagement() {
                             )}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteClick(user)}>
                             <Trash2 className="h-4 w-4 mr-2 text-red-600" />
                             <span className="text-red-600">Supprimer</span>
                           </DropdownMenuItem>
@@ -283,6 +313,21 @@ export function UserManagement() {
             </TableBody>
           </Table>
         </div>
+
+        {/* Dialogues modaux */}
+        <EditUserDialog 
+          user={editingUser}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSuccess={fetchUsers}
+        />
+        
+        <DeleteUserDialog
+          user={deletingUser}
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onSuccess={fetchUsers}
+        />
       </CardContent>
     </Card>
   )

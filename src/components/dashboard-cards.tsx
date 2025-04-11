@@ -1,20 +1,106 @@
 "use client"
 
-import { ArrowUpIcon, Building2, CreditCard, DollarSign, Users } from "lucide-react"
+import { useEffect, useState } from "react"
+import { ArrowUpIcon, Building2, CreditCard, DollarSign, Shield, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+interface DashboardData {
+  userCount: number
+  orgCount: number
+  recentSecurityLogs: number
+  recentAuditLogs: number
+  userRoles: {
+    superadmin: number
+    admin: number
+    employee: number
+  }
+  recentActivities: Array<{
+    action: string
+    entity_type: string
+    created_at: string
+  }>
+}
+
 export function DashboardCards() {
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/superadmin/dashboard-summary')
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des données')
+        }
+        const dashboardData = await response.json()
+        setData(dashboardData)
+      } catch (err) {
+        console.error('Erreur:', err)
+        setError('Impossible de charger les données du tableau de bord')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="h-4 w-24 animate-pulse bg-gray-200 rounded"></div>
+              <div className="h-4 w-4 animate-pulse bg-gray-200 rounded-full"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-6 w-16 animate-pulse bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 w-40 animate-pulse bg-gray-200 rounded"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-md mb-4">
+        <p className="text-red-700 dark:text-red-400">{error}</p>
+      </div>
+    )
+  }
+
+  const totalUsers = data?.userCount || 0
+  const superadmins = data?.userRoles.superadmin || 0
+  const admins = data?.userRoles.admin || 0
+  const employees = data?.userRoles.employee || 0
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
-      <UserRolesCard />
-      <ActiveOrganizationsCard />
-      <RevenueCard />
-      <PaymentStatusCard />
+      <UserRolesCard 
+        totalUsers={totalUsers} 
+        superadmins={superadmins}
+        admins={admins}
+        employees={employees}
+      />
+      <ActiveOrganizationsCard orgCount={data?.orgCount || 0} />
+      <SecurityLogsCard recentLogs={data?.recentSecurityLogs || 0} />
+      <AuditLogsCard recentLogs={data?.recentAuditLogs || 0} />
     </div>
   )
 }
 
-export function UserRolesCard() {
+interface UserRolesCardProps {
+  totalUsers: number
+  superadmins: number
+  admins: number
+  employees: number
+}
+
+export function UserRolesCard({ totalUsers, superadmins, admins, employees }: UserRolesCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -22,12 +108,12 @@ export function UserRolesCard() {
         <Users className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">1,248</div>
+        <div className="text-2xl font-bold">{totalUsers}</div>
         <div className="flex items-center space-x-2">
           <div className="text-xs text-muted-foreground mt-1">
-            <span className="font-medium text-foreground">42</span> SuperAdmins,
-            <span className="font-medium text-foreground"> 156</span> Admins,
-            <span className="font-medium text-foreground"> 1,050</span> Employés
+            <span className="font-medium text-foreground">{superadmins}</span> SuperAdmins,
+            <span className="font-medium text-foreground"> {admins}</span> Admins,
+            <span className="font-medium text-foreground"> {employees}</span> Employés
           </div>
         </div>
       </CardContent>
@@ -35,7 +121,11 @@ export function UserRolesCard() {
   )
 }
 
-export function ActiveOrganizationsCard() {
+interface OrganizationsCardProps {
+  orgCount: number
+}
+
+export function ActiveOrganizationsCard({ orgCount }: OrganizationsCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -43,11 +133,10 @@ export function ActiveOrganizationsCard() {
         <Building2 className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">128</div>
+        <div className="text-2xl font-bold">{orgCount}</div>
         <div className="flex items-center space-x-2">
           <div className="text-xs text-muted-foreground mt-1">
-            <span className="font-medium text-emerald-500">112</span> actives,
-            <span className="font-medium text-rose-500"> 16</span> inactives
+            Total des organisations enregistrées
           </div>
         </div>
       </CardContent>
@@ -55,43 +144,45 @@ export function ActiveOrganizationsCard() {
   )
 }
 
-export function RevenueCard() {
+interface SecurityLogsCardProps {
+  recentLogs: number
+}
+
+export function SecurityLogsCard({ recentLogs }: SecurityLogsCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Montant total facturé</CardTitle>
-        <DollarSign className="h-4 w-4 text-muted-foreground" />
+        <CardTitle className="text-sm font-medium">Logs de sécurité récents</CardTitle>
+        <Shield className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">$128,250 CAD</div>
+        <div className="text-2xl font-bold">{recentLogs}</div>
         <div className="flex items-center space-x-2">
-          <ArrowUpIcon className="h-4 w-4 text-emerald-500" />
-          <div className="text-xs text-emerald-500">+12.5% par rapport au mois dernier</div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Activités des dernières 24 heures
+          </div>
         </div>
       </CardContent>
     </Card>
   )
 }
 
-export function PaymentStatusCard() {
+interface AuditLogsCardProps {
+  recentLogs: number
+}
+
+export function AuditLogsCard({ recentLogs }: AuditLogsCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Statut des paiements</CardTitle>
+        <CardTitle className="text-sm font-medium">Actions d&apos;audit récentes</CardTitle>
         <CreditCard className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">$98,250 CAD</div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center space-x-2">
-            <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-emerald-500">$98,250 CAD</span> reçus
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-rose-500">$30,000 CAD</span> en retard
-            </div>
+        <div className="text-2xl font-bold">{recentLogs}</div>
+        <div className="flex items-center space-x-2">
+          <div className="text-xs text-muted-foreground mt-1">
+            Modifications des dernières 24 heures
           </div>
         </div>
       </CardContent>
