@@ -28,7 +28,16 @@
     "login": "Login",
     "logout": "Logout",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "register": "Create account",
+    "loading": "Checking authentication...",
+    "authCheckError": "Error checking authentication",
+    "invalidCredentials": "Invalid email or password",
+    "accountBlocked": "Your account is blocked",
+    "accountInactive": "Your account is inactive",
+    "accountDeleted": "This account has been deleted",
+    "unauthorized": "You don't have the required permissions"
   },
   "admin": {
     "company": {

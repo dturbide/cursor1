@@ -28,7 +28,16 @@
     "login": "Connexion",
     "logout": "Déconnexion",
     "email": "Email",
-    "password": "Mot de passe"
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "register": "Créer un compte",
+    "loading": "Vérification de l'authentification...",
+    "authCheckError": "Erreur lors de la vérification de l'authentification",
+    "invalidCredentials": "Email ou mot de passe incorrect",
+    "accountBlocked": "Votre compte est bloqué",
+    "accountInactive": "Votre compte est inactif",
+    "accountDeleted": "Ce compte a été supprimé",
+    "unauthorized": "Vous n'avez pas les permissions nécessaires"
   },
   "admin": {
     "company": {
