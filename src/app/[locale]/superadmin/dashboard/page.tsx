@@ -4,8 +4,14 @@ import { createServerActionClient } from '@/lib/supabase/server';
 import { DashboardShell } from '@/components/dashboard-shell';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { SuperAdminDashboard } from '@/components/superadmin-dashboard';
+import { getTranslations } from 'next-intl/server';
 
-export default async function SuperAdminDashboardPage() {
+type Props = {
+  params: { locale: string }
+};
+
+export default async function SuperAdminDashboardPage({ params: { locale } }: Props) {
+  const t = await getTranslations('SuperAdminDashboard');
   const cookieStore = cookies();
   const supabase = createServerActionClient(cookieStore);
   
@@ -14,7 +20,7 @@ export default async function SuperAdminDashboardPage() {
   } = await supabase.auth.getSession();
 
   if (!session) {
-    redirect('/auth/login');
+    redirect(`/${locale}/auth/login`);
   }
 
   // Récupérer les informations utilisateur
@@ -22,7 +28,7 @@ export default async function SuperAdminDashboardPage() {
   const user = userData.user;
 
   if (!user) {
-    redirect('/auth/login');
+    redirect(`/${locale}/auth/login`);
   }
 
   // Vérifier si l'utilisateur a le rôle superadmin
@@ -33,14 +39,14 @@ export default async function SuperAdminDashboardPage() {
     .single();
 
   if (!userProfile || userProfile.role !== 'superadmin') {
-    redirect('/dashboard');
+    redirect(`/${locale}/dashboard`);
   }
 
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="SuperAdmin Dashboard"
-        text="Vue globale de l'application et gestion des accès."
+        heading={t('title')}
+        text={t('description')}
       />
       <div className="grid gap-10">
         <SuperAdminDashboard />

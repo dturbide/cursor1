@@ -11,6 +11,14 @@
     "profile": "Profile",
     "settings": "Settings"
   },
+  "SuperAdminDashboard": {
+    "title": "SuperAdmin Dashboard",
+    "description": "Global application view and access management",
+    "users": "Users",
+    "companies": "Companies",
+    "analytics": "Analytics",
+    "settings": "System Settings"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

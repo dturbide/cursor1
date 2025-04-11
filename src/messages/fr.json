@@ -11,6 +11,14 @@
     "profile": "Profil",
     "settings": "Paramètres"
   },
+  "SuperAdminDashboard": {
+    "title": "Tableau de bord SuperAdmin",
+    "description": "Vue globale de l'application et gestion des accès",
+    "users": "Utilisateurs",
+    "companies": "Entreprises",
+    "analytics": "Analytiques",
+    "settings": "Paramètres système"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",
