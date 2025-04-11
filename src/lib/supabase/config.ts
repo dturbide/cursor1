@@ -3,7 +3,10 @@ import { createBrowserClient } from '@supabase/ssr'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+// Configuration commune
+export const SITE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:3000'
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
+export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const getURL = () => {
   let url = SITE_URL;
