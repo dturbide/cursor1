@@ -28,7 +28,7 @@ export function Sidebar({ className, ...props }: SidebarProps) {
     <div className={cn("pb-12 w-64 border-r bg-background", className)} {...props}>
       <div className="space-y-4 py-4">
         <div className="px-4 py-2">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Link href="/superadmin/dashboard" className="flex items-center gap-2 font-semibold">
             <Package2 className="h-6 w-6" />
             <span>SuperAdmin</span>
           </Link>
@@ -46,40 +46,40 @@ export function SidebarContent() {
     <div className="px-3 py-2">
       <div className="space-y-1">
         <h2 className="mb-2 px-4 text-xs font-semibold tracking-tight">Général</h2>
-        <NavItem href="/" icon={Home} active={pathname === "/"}>
+        <NavItem href="/superadmin/dashboard" icon={Home} active={pathname === "/superadmin/dashboard"}>
           Tableau de bord
         </NavItem>
-        <NavItem href="/users" icon={Users} active={pathname === "/users"}>
+        <NavItem href="/superadmin/users" icon={Users} active={pathname === "/superadmin/users"}>
           Utilisateurs
         </NavItem>
-        <NavItem href="/organizations" icon={Building2} active={pathname === "/organizations"}>
+        <NavItem href="/superadmin/organizations" icon={Building2} active={pathname === "/superadmin/organizations"}>
           Organisations
         </NavItem>
-        <NavItem href="/analytics" icon={BarChart4} active={pathname === "/analytics"}>
+        <NavItem href="/superadmin/analytics" icon={BarChart4} active={pathname === "/superadmin/analytics"}>
           Analytiques
         </NavItem>
       </div>
       <div className="space-y-1 pt-6">
         <h2 className="mb-2 px-4 text-xs font-semibold tracking-tight">Paiements</h2>
-        <NavItem href="/payments" icon={CreditCard} active={pathname === "/payments"}>
+        <NavItem href="/superadmin/payments" icon={CreditCard} active={pathname === "/superadmin/payments"}>
           Gestion des paiements
         </NavItem>
-        <NavItem href="/reminders" icon={Bell} active={pathname === "/reminders"}>
+        <NavItem href="/superadmin/reminders" icon={Bell} active={pathname === "/superadmin/reminders"}>
           Rappels de paiement
         </NavItem>
-        <NavItem href="/invoices" icon={FileText} active={pathname === "/invoices"}>
+        <NavItem href="/superadmin/invoices" icon={FileText} active={pathname === "/superadmin/invoices"}>
           Factures
         </NavItem>
       </div>
       <div className="space-y-1 pt-6">
         <h2 className="mb-2 px-4 text-xs font-semibold tracking-tight">Système</h2>
-        <NavItem href="/security" icon={Shield} active={pathname === "/security"}>
+        <NavItem href="/superadmin/security" icon={Shield} active={pathname === "/superadmin/security"}>
           Sécurité
         </NavItem>
-        <NavItem href="/logs" icon={AlertTriangle} active={pathname === "/logs"}>
+        <NavItem href="/superadmin/logs" icon={AlertTriangle} active={pathname === "/superadmin/logs"}>
           Logs
         </NavItem>
-        <NavItem href="/settings" icon={Settings} active={pathname === "/settings"}>
+        <NavItem href="/superadmin/settings" icon={Settings} active={pathname === "/superadmin/settings"}>
           Paramètres
         </NavItem>
       </div>
