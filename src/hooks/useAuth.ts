@@ -1,13 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useLocale } from 'next-intl';
+import { createClient } from '@/lib/supabase/config';
 import type { UserProfile, Database } from '@/types/supabase';
 
 export function useAuth() {
   const router = useRouter();
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClient;
   const locale = useLocale();
 
   const signOut = async () => {
