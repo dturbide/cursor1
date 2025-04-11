@@ -1,48 +1,80 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
+import { Negotiator } from 'negotiator';
+import { match } from 'path-to-regexp';
 
 const publicPages = ['/', '/auth/login', '/auth/register'];
+
+function getLocale(request: NextRequest): string {
+  const negotiatorHeaders: Record<string, string> = {}
+  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
+
+  // @ts-ignore locales are readonly
+  const languages = new Negotiator({ headers: negotiatorHeaders }).languages()
+  const locale = match(languages, locales, defaultLocale)
+  return locale
+}
 
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+export async function middleware(request: NextRequest) {
+  const response = intlMiddleware(request);
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // Create a Supabase client configured to use cookies
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: CookieOptions) {
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
 
-  // Gestion de l'internationalisation
-  const intlRes = await intlMiddleware(req);
+  await supabase.auth.getSession()
 
   // Si la page est publique, on laisse passer
-  if (publicPages.includes(req.nextUrl.pathname)) {
-    return intlRes;
+  if (publicPages.includes(request.nextUrl.pathname)) {
+    return response;
   }
 
   // Si l'utilisateur n'est pas connecté et essaie d'accéder à une page protégée
-  if (!session && !req.nextUrl.pathname.startsWith('/auth')) {
-    const redirectUrl = new URL('/auth/login', req.url);
+  if (!request.nextUrl.pathname.startsWith('/auth')) {
+    const redirectUrl = new URL('/auth/login', request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
   // Si l'utilisateur est connecté et essaie d'accéder aux pages d'auth
-  if (session && req.nextUrl.pathname.startsWith('/auth')) {
-    const redirectUrl = new URL('/dashboard', req.url);
+  if (request.nextUrl.pathname.startsWith('/auth')) {
+    const redirectUrl = new URL('/dashboard', request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
-  return intlRes;
+  return response;
 }
 
 export const config = {
-  matcher: ['/', '/(fr|en)/:path*', '/auth/:path*', '/dashboard/:path*', '/superadmin/:path*']
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 }; 
