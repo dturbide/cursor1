@@ -2,6 +2,12 @@
 
 Application SaaS moderne pour la gestion d'entreprise avec authentification multi-niveaux, intégration IA et interfaces utilisateur réactives, construite avec Next.js 15 et Supabase.
 
+## Dernières mises à jour
+
+- Migration vers `@supabase/ssr` pour une meilleure gestion de l'authentification
+- Optimisation des performances de rendu côté serveur
+- Amélioration de la gestion des sessions utilisateur
+
 ## Fonctionnalités
 
 - Authentification multi-niveaux (utilisateur, admin, superadmin) avec Supabase
@@ -49,7 +55,7 @@ Application SaaS moderne pour la gestion d'entreprise avec authentification mult
 
 L'application est déployée automatiquement sur Vercel à chaque push sur la branche main.
 
-Site en production : [https://cursor1-one.vercel.app](https://cursor1-one.vercel.app)
+Site en production : [https://v0-cursor1.vercel.app](https://v0-cursor1.vercel.app)
 
 ### Configuration du déploiement
 
