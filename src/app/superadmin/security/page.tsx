@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UnblockUserButton } from "@/components/security/unblock-user-button";
 
 export default async function SecurityPage() {
   const supabase = createServerComponentClient({ cookies });
@@ -297,7 +298,7 @@ export default async function SecurityPage() {
                             </TableCell>
                             <TableCell>{user.block_reason || 'Raisons de sécurité'}</TableCell>
                             <TableCell className="text-right">
-                              <Button variant="outline" size="sm">Débloquer</Button>
+                              <UnblockUserButton userId={user.id} />
                             </TableCell>
                           </TableRow>
                         ))
