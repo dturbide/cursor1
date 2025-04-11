@@ -6,6 +6,11 @@ const nextConfig = {
   },
   // Désactiver le prérendu statique
   output: 'standalone',
+  // Configuration supplémentaire pour désactiver le prérendu statique
+  experimental: {
+    workerThreads: false,
+    cpus: 1
+  },
 };
 
 module.exports = nextConfig; 
