@@ -3,8 +3,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
 
+// Liste des pages publiques (sans le préfixe de locale)
 const publicPages = ['/', '/auth/login', '/auth/register'];
 
+// Créer le middleware d'internationalisation
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
@@ -12,7 +14,13 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  
+  // Gérer d'abord l'internationalisation
   const response = intlMiddleware(request);
+  
+  // Extraire la locale du chemin
+  const pathnameWithoutLocale = pathname.replace(/^\/(?:fr|en)/, '');
 
   // Create a Supabase client configured to use cookies
   const supabase = createServerClient(
@@ -21,42 +29,44 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         get(name: string) {
-          return request.cookies.get(name)?.value
+          return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
           response.cookies.set({
             name,
             value,
             ...options,
-          })
+          });
         },
         remove(name: string, options: CookieOptions) {
           response.cookies.set({
             name,
             value: '',
             ...options,
-          })
+          });
         },
       },
     }
-  )
+  );
 
-  await supabase.auth.getSession()
+  const { data: { session } } = await supabase.auth.getSession();
 
   // Si la page est publique, on laisse passer
-  if (publicPages.includes(request.nextUrl.pathname)) {
+  if (publicPages.includes(pathnameWithoutLocale)) {
     return response;
   }
 
   // Si l'utilisateur n'est pas connecté et essaie d'accéder à une page protégée
-  if (!request.nextUrl.pathname.startsWith('/auth')) {
-    const redirectUrl = new URL('/auth/login', request.url);
+  if (!session && !pathnameWithoutLocale.startsWith('/auth')) {
+    const locale = request.nextUrl.pathname.split('/')[1] || defaultLocale;
+    const redirectUrl = new URL(`/${locale}/auth/login`, request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
   // Si l'utilisateur est connecté et essaie d'accéder aux pages d'auth
-  if (request.nextUrl.pathname.startsWith('/auth')) {
-    const redirectUrl = new URL('/dashboard', request.url);
+  if (session && pathnameWithoutLocale.startsWith('/auth')) {
+    const locale = request.nextUrl.pathname.split('/')[1] || defaultLocale;
+    const redirectUrl = new URL(`/${locale}/dashboard`, request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
@@ -64,5 +74,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 }; 
