@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +17,7 @@ export function LanguageSelector() {
   const router = useRouter();
   const pathname = usePathname();
   const { updatePreferredLanguage } = usePreferredLanguage();
+  const t = useTranslations('languages');
 
   const changeLanguage = async (newLocale: string) => {
     // Mettre à jour la langue préférée dans la base de données
@@ -30,16 +31,16 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" aria-label={t('select')}>
           <Languages className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => changeLanguage('fr')}>
-          Français
+          {t('french')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeLanguage('en')}>
-          English
+          {t('english')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

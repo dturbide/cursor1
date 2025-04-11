@@ -5,6 +5,12 @@
     "login": "Login",
     "register": "Register"
   },
+  "Header": {
+    "title": "Cursor1",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
@@ -45,5 +51,10 @@
     "search": "Search",
     "searchPlaceholder": "Search for a command...",
     "noResults": "No results found"
+  },
+  "languages": {
+    "french": "French",
+    "english": "English",
+    "select": "Change language"
   }
 } 

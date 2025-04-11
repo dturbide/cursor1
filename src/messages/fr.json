@@ -5,6 +5,12 @@
     "login": "Se connecter",
     "register": "S'inscrire"
   },
+  "Header": {
+    "title": "Cursor1",
+    "logout": "Déconnexion",
+    "profile": "Profil",
+    "settings": "Paramètres"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",
@@ -45,5 +51,10 @@
     "search": "Rechercher",
     "searchPlaceholder": "Rechercher une commande...",
     "noResults": "Aucun résultat trouvé"
+  },
+  "languages": {
+    "french": "Français",
+    "english": "Anglais",
+    "select": "Changer de langue"
   }
 } 
