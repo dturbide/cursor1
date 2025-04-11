@@ -1,4 +1,5 @@
 {
+  // Trigger deployment
   "buildCommand": "next build",
   "framework": "nextjs",
   "outputDirectory": ".next",
