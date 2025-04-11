@@ -12,7 +12,7 @@ export function useSupabase() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((event, session) => {
+    } = supabaseClient.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         // Gérer la déconnexion si nécessaire
       }
