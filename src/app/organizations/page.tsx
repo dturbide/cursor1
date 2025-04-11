@@ -1,3 +1,5 @@
+"use client"
+
 import type { Metadata } from "next"
 import DashboardShell from "@/components/dashboard-shell"
 import { DashboardHeader } from "@/components/dashboard-header"
