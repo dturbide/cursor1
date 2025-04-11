@@ -1,4 +1,10 @@
 {
+  "Home": {
+    "title": "Cursor1 - Business Management",
+    "description": "SaaS application for efficient business management",
+    "login": "Login",
+    "register": "Register"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

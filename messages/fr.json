@@ -1,4 +1,10 @@
 {
+  "Home": {
+    "title": "Cursor1 - Gestion d'entreprise",
+    "description": "Application SaaS pour la gestion efficace de votre entreprise",
+    "login": "Se connecter",
+    "register": "S'inscrire"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",

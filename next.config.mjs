@@ -4,7 +4,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   output: 'standalone',
-  swcMinify: true
+  swcMinify: true,
+  experimental: {
+    serverComponentsExternalPackages: ['next-intl']
+  }
 };
 
 export default nextConfig; 

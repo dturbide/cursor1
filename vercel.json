@@ -1,9 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
+  "buildCommand": "npm run build",
+  "cleanUrls": true,
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "i18n": {
+    "locales": ["fr", "en"],
+    "defaultLocale": "fr"
+  }
 }
