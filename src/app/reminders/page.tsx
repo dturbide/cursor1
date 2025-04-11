@@ -1,16 +1,10 @@
 "use client"
 
-import type { Metadata } from "next"
 import DashboardShell from "@/components/dashboard-shell"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { ReminderManagement } from "@/components/reminder-management"
 import { Button } from "@/components/ui/button"
 import { Settings } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Rappels de Paiement",
-  description: "Gérez les rappels de paiement",
-}
 
 export default function RemindersPage() {
   return (
