@@ -55,4 +55,8 @@ export const createServerComponentClient = () => {
       },
     }
   )
-} 
+}
+
+// Re-export from client and server files
+export { createClient } from './client'
+export { createServerComponentClient } from './server' 
