@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createServerActionClient } from '@/lib/supabase/server';
-import { DashboardShell } from '@/components/dashboard-shell';
-import { DashboardHeader } from '@/components/dashboard-header';
-import { DashboardCards } from '@/components/dashboard-cards';
+import { DashboardShell, DashboardHeader, DashboardCards } from '@/components';
 
 export default async function AdminDashboardPage() {
   const cookieStore = cookies();

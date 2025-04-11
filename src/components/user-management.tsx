@@ -303,7 +303,7 @@ export default function UserManagement() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <tr key={user.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{user.email}</div>
@@ -332,6 +332,24 @@ export default function UserManagement() {
                   >
                     <Trash2 className="h-4 w-4" />
                     Supprimer
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleUserStatus(user.id, user.is_active)}
+                    className="gap-2"
+                  >
+                    {user.is_active ? (
+                      <>
+                        <XCircle className="h-4 w-4" />
+                        Désactiver
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="h-4 w-4" />
+                        Activer
+                      </>
+                    )}
                   </Button>
                   <EditUserDialog 
                     user={user} 

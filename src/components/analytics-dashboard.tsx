@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from '@/lib/supabase/config'
 import { 
   Card, 
   CardContent, 
@@ -34,13 +33,13 @@ export function AnalyticsDashboard() {
       try {
         const response = await fetch('/api/superadmin/dashboard-summary')
         if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des statistiques')
+          throw new Error("Erreur lors de la récupération des statistiques")
         }
         const data = await response.json()
         setStats(data)
       } catch (err) {
-        console.error('Erreur:', err)
-        setError('Impossible de charger les données analytiques')
+        console.error("Erreur:", err)
+        setError("Impossible de charger les données analytiques")
       } finally {
         setLoading(false)
       }

@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { DashboardShell, DashboardHeader } from '@/components';
 import { createServerActionClient } from '@/lib/supabase/server';
-import { DashboardShell } from '@/components/dashboard-shell';
-import { DashboardHeader } from '@/components/dashboard-header';
 import { DashboardCards } from '@/components/dashboard-cards';
 
 export default async function DashboardPage() {

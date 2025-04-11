@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { createClient } from '@/lib/supabase/config'
 import { 
   Card, 
   CardContent, 
@@ -11,7 +10,6 @@ import {
   CardTitle 
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 
@@ -19,7 +17,6 @@ export function AIDatabase() {
   const [query, setQuery] = useState("")
   const [result, setResult] = useState("")
   const [loading, setLoading] = useState(false)
-  const supabase = createClient()
 
   const handleQuery = async () => {
     if (!query.trim()) {

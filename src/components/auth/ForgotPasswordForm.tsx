@@ -1,14 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/config';
+import { AuthError } from '@supabase/supabase-js';
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const router = useRouter();
   const supabase = createClient;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,8 +22,12 @@ export default function ForgotPasswordForm() {
 
       if (error) throw error;
       setSuccess(true);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        setError(error.message);
+      } else {
+        setError('Une erreur est survenue lors de la réinitialisation du mot de passe');
+      }
     }
   };
 

@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { DashboardShell, DashboardHeader } from '@/components';
 import { createServerActionClient } from '@/lib/supabase/server';
-import { DashboardShell } from '@/components/dashboard-shell';
-import { DashboardHeader } from '@/components/dashboard-header';
 import { AnalyticsDashboard } from '@/components/analytics-dashboard';
 
 export default async function SuperAdminAnalyticsPage() {
