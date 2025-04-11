@@ -31,7 +31,7 @@ export function AnalyticsDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/superadmin/dashboard-summary')
+        const response = await fetch("/api/superadmin/dashboard-summary")
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des statistiques")
         }
@@ -71,7 +71,7 @@ export function AnalyticsDashboard() {
   return (
     <Tabs defaultValue="overview" className="space-y-4">
       <TabsList>
-        <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+        <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
         <TabsTrigger value="security">Sécurité</TabsTrigger>
       </TabsList>
@@ -125,7 +125,7 @@ export function AnalyticsDashboard() {
             <CardContent>
               <div className="text-2xl font-bold">{stats?.admins || 0}</div>
               <p className="text-xs text-muted-foreground">
-                Administrateurs d'organisation
+                Administrateurs d&apos;organisation
               </p>
             </CardContent>
           </Card>

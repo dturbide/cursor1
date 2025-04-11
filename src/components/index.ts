@@ -1,3 +1,3 @@
-export { default as DashboardShell } from './dashboard-shell'
-export { default as DashboardHeader } from './dashboard-header'
-export { default as DashboardCards } from './dashboard-cards' 
+export { DashboardShell } from './dashboard-shell'
+export { DashboardHeader } from './dashboard-header'
+export { DashboardCards } from './dashboard-cards' 
