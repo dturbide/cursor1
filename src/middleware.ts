@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
 import { Negotiator } from 'negotiator';
-import { match } from 'path-to-regexp';
+import { match } from '@formatjs/intl-localematcher';
 
 const publicPages = ['/', '/auth/login', '/auth/register'];
 
