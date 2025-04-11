@@ -4,12 +4,10 @@ export const dynamicParams = true
 export const revalidate = 0
 
 export async function GET(request) {
-  // Récupérer le chemin demandé
-  const url = new URL(request.url)
-  const path = url.pathname
-  
-  // Rediriger vers la page réelle
-  // Ce qui se passe ici c'est que nous contournons le prérendu
-  // en passant par un handler API qui est toujours dynamique
-  return Response.redirect(new URL(path, process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'))
+  // Retourner une réponse simple pour tester
+  return new Response(JSON.stringify({ ok: true, message: "Cette route fonctionne correctement" }), {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 } 
