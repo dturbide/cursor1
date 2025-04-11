@@ -4,10 +4,13 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Version 2.0.0 - Optimized for production
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: 'standalone'
+  output: 'standalone',
+  poweredByHeader: false,
+  compress: true
 };
 
 export default withNextIntl(nextConfig); 
