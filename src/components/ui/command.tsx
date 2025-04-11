@@ -14,7 +14,7 @@ interface CommandProps extends React.ComponentPropsWithoutRef<typeof CommandPrim
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive>
+  CommandProps
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
