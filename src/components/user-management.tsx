@@ -13,39 +13,18 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { createClient } from '@/lib/supabase/config'
+import type { UserProfile } from '@/types/supabase'
+import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { AddSuperAdminDialog } from "./add-super-admin-dialog"
 import { EditUserDialog } from "./edit-user-dialog"
 import { DeleteUserDialog } from "./delete-user-dialog"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-interface UserProfile {
-  id: string
-  email: string
-  first_name: string | null
-  last_name: string | null
-  role: string
-  organization_id: string | null
-  is_active: boolean
-  created_at: string
-}
-
-export function UserManagement() {
+export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -55,34 +34,28 @@ export function UserManagement() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const supabase = createClientComponentClient()
+  const [error, setError] = useState<string | null>(null)
+  const supabase = createClient()
 
-  // Fonction pour charger les utilisateurs
-  const fetchUsers = useCallback(async () => {
-    setLoading(true)
+  const fetchUsers = async () => {
     try {
-      console.log("Récupération des utilisateurs...")
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
-        
-      if (error) {
-        console.error('Erreur lors de la récupération des utilisateurs:', error)
-        return
-      }
-      
-      console.log("Utilisateurs récupérés:", data)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
       setUsers(data || [])
-    } catch (error) {
-      console.error('Erreur:', error)
+    } catch (error: any) {
+      setError(error.message)
     } finally {
       setLoading(false)
     }
-  }, [supabase])
-  
+  }
+
   useEffect(() => {
     fetchUsers()
-  }, [fetchUsers])
+  }, [])
 
   // Fonction pour garantir qu'il y a au moins un superadmin
   const ensureSuperAdmin = useCallback(async () => {
@@ -247,171 +220,141 @@ export function UserManagement() {
     setIsDeleteDialogOpen(true)
   }
 
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>Liste des utilisateurs</CardTitle>
-          <CardDescription>Gérez les utilisateurs de votre application et leurs rôles</CardDescription>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+          <p className="text-sm text-gray-600">Chargement des utilisateurs...</p>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => fetchUsers()}
-            disabled={loading}
-          >
-            {loading ? 'Chargement...' : 'Rafraîchir'}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-2 text-red-600">
+          <XCircle className="h-8 w-8" />
+          <p className="text-sm">Une erreur est survenue : {error}</p>
+          <Button variant="outline" size="sm" onClick={fetchUsers}>
+            Réessayer
           </Button>
-          <AddSuperAdminDialog onSuccess={fetchUsers} />
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* Section de débogage - sera visible uniquement en développement */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-md overflow-auto max-h-60">
-            <details>
-              <summary className="font-medium text-amber-700 cursor-pointer">Informations de débogage ({users.length} utilisateurs)</summary>
-              <pre className="mt-2 text-xs text-amber-800 whitespace-pre-wrap">
-                {JSON.stringify(users, null, 2)}
-              </pre>
-            </details>
-          </div>
-        )}
-        
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              type="search"
-              placeholder="Rechercher par nom ou email..."
-              className="pl-8"
+              placeholder="Rechercher..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
             />
           </div>
-          <div className="flex gap-4">
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrer par rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les rôles</SelectItem>
-                <SelectItem value="superadmin">SuperAdmin</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="employee">Employé</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrer par statut" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="active">Actif</SelectItem>
-                <SelectItem value="inactive">Inactif</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filtrer par rôle" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les rôles</SelectItem>
+              <SelectItem value="superadmin">SuperAdmin</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="employee">Employé</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filtrer par statut" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="active">Actif</SelectItem>
+              <SelectItem value="inactive">Inactif</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                  <Button variant="ghost" className="p-0 h-8 font-medium flex items-center gap-1">
-                    Nom
-                    <ArrowUpDown className="h-3 w-3" />
+        <AddSuperAdminDialog onSuccess={fetchUsers} />
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Role
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{user.email}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {getRoleBadge(user.role)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {getStatusBadge(user.is_active)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleEditClick(user)}
+                    className="gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Modifier
                   </Button>
-                </TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Date de création</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center p-4">
-                    Chargement des utilisateurs...
-                  </TableCell>
-                </TableRow>
-              ) : filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center p-4">
-                    Aucun utilisateur trouvé
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">
-                      {user.first_name} {user.last_name || ''}
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell>{getStatusBadge(user.is_active)}</TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Ouvrir le menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleEditClick(user)}>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Modifier
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toggleUserStatus(user.id, user.is_active)}>
-                            {user.is_active ? (
-                              <>
-                                <XCircle className="h-4 w-4 mr-2" />
-                                Désactiver
-                              </>
-                            ) : (
-                              <>
-                                <CheckCircle2 className="h-4 w-4 mr-2" />
-                                Activer
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDeleteClick(user)}>
-                            <Trash2 className="h-4 w-4 mr-2 text-red-600" />
-                            <span className="text-red-600">Supprimer</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Dialogues modaux */}
-        <EditUserDialog 
-          user={editingUser}
-          open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
-          onSuccess={fetchUsers}
-        />
-        
-        <DeleteUserDialog
-          user={deletingUser}
-          open={isDeleteDialogOpen}
-          onOpenChange={setIsDeleteDialogOpen}
-          onSuccess={fetchUsers}
-        />
-      </CardContent>
-    </Card>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteClick(user)}
+                    className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Supprimer
+                  </Button>
+                  <EditUserDialog 
+                    user={user} 
+                    open={isEditDialogOpen && editingUser?.id === user.id}
+                    onOpenChange={(open) => {
+                      setIsEditDialogOpen(open);
+                      if (!open) setEditingUser(null);
+                    }}
+                    onSuccess={fetchUsers} 
+                  />
+                  <DeleteUserDialog 
+                    user={user} 
+                    open={isDeleteDialogOpen && deletingUser?.id === user.id}
+                    onOpenChange={(open) => {
+                      setIsDeleteDialogOpen(open);
+                      if (!open) setDeletingUser(null);
+                    }}
+                    onSuccess={fetchUsers} 
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   )
 }

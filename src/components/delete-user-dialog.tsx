@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/config'
 import { 
   AlertDialog,
   AlertDialogCancel,
@@ -30,7 +30,7 @@ interface DeleteUserDialogProps {
 
 export function DeleteUserDialog({ user, open, onOpenChange, onSuccess }: DeleteUserDialogProps) {
   const [loading, setLoading] = useState(false)
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   const handleDelete = async () => {
     if (!user) return

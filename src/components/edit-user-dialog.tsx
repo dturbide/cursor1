@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/config'
 import { 
   Dialog, 
   DialogContent, 
@@ -43,7 +43,7 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
     isActive: true
   })
 
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   // Mettre à jour le formulaire lorsque l'utilisateur change
   useEffect(() => {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/config'
 import { 
   Dialog, 
   DialogContent, 
@@ -31,7 +31,7 @@ export function AddSuperAdminDialog({ onSuccess }: AddSuperAdminDialogProps) {
     password: ''
   })
 
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target

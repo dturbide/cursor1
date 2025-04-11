@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { UserManagement } from '@/components/user-management';
+import { createServerClient } from '@/lib/supabase/config';
+import UserManagement from '@/components/user-management';
 
 export default async function UsersPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerClient(cookieStore);
   
   const {
     data: { session },
