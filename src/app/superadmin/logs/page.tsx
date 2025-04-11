@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createServerActionClient } from '@/lib/supabase/server';
-import { DashboardShell } from '@/components/dashboard-shell';
-import { DashboardHeader } from '@/components/dashboard-header';
+import { DashboardShell, DashboardHeader } from '@/components';
 
 export default async function SuperAdminLogsPage() {
   const cookieStore = cookies();
@@ -38,11 +37,11 @@ export default async function SuperAdminLogsPage() {
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Journaux d'activité"
+        heading="Journaux d&apos;activité"
         text="Historique des actions et événements système."
       />
       <div className="grid gap-10">
-        <p>Contenu des journaux d'activité...</p>
+        <p>Contenu des journaux d&apos;activité...</p>
       </div>
     </DashboardShell>
   );

@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerActionClient } from '@/lib/supabase/server'
-import { DashboardShell } from '@/components/dashboard-shell'
-import { DashboardHeader } from '@/components/dashboard-header'
+import { DashboardShell, DashboardHeader } from '@/components'
 import { AIDatabase } from '@/components/ai-database'
 
 export const metadata = {

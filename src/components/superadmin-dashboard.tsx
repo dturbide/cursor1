@@ -17,8 +17,12 @@ import {
   Settings,
   BarChart,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  CircleUser,
+  ShieldCheck,
+  Shield
 } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Stats {
   totalUsers: number
@@ -99,8 +103,8 @@ export function SuperAdminDashboard() {
             <div className="text-2xl font-bold">{stats?.activeUsers || 0}</div>
             <p className="text-xs text-muted-foreground">
               {stats?.totalUsers 
-                ? `${Math.round((stats.activeUsers / stats.totalUsers) * 100)}% d'utilisateurs actifs`
-                : 'Aucun utilisateur'}
+                ? `${Math.round((stats.activeUsers / stats.totalUsers) * 100)}% d&apos;utilisateurs actifs`
+                : &apos;Aucun utilisateur&apos;}
             </p>
           </CardContent>
         </Card>
@@ -194,9 +198,9 @@ export function SuperAdminDashboard() {
             <div className="flex items-center justify-between border-b pb-2">
               <div className="flex items-center space-x-2">
                 <AlertCircle className="h-5 w-5 text-yellow-500" />
-                <span className="font-medium">Service de notifications</span>
+                <span className="font-medium">Système d&apos;authentification</span>
               </div>
-              <span className="text-sm text-yellow-500">Performance dégradée</span>
+              <span className="text-sm text-yellow-500">Performance réduite</span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -209,6 +213,34 @@ export function SuperAdminDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      <TabsContent value="users" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Statistiques des utilisateurs</CardTitle>
+            <CardDescription>
+              Informations détaillées sur les utilisateurs du système
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Contenu détaillé des statistiques d&apos;utilisateurs</p>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      <TabsContent value="security" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Rapport de sécurité</CardTitle>
+            <CardDescription>
+              Suivi des tentatives de connexion et événements de sécurité
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Contenu détaillé du rapport de sécurité</p>
+          </CardContent>
+        </Card>
+      </TabsContent>
     </div>
   )
 } 

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { createClient } from '@/lib/supabase/config';
-import type { UserProfile, Database } from '@/types/supabase';
+import type { UserProfile } from '@/types/supabase';
 
 export function useAuth() {
   const router = useRouter();
