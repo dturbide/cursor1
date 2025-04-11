@@ -1,13 +1,13 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import createIntlMiddleware from 'next-intl/middleware';
+import createMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n/config';
 
 // Liste des pages publiques (sans le préfixe de locale)
 const publicPages = ['/', '/auth/login', '/auth/register'];
 
 // Créer le middleware d'internationalisation
-const intlMiddleware = createIntlMiddleware({
+const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'always'

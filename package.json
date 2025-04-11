@@ -26,6 +26,7 @@
     "@supabase/functions-js": "^2.4.4",
     "@supabase/ssr": "^0.6.1",
     "@types/negotiator": "^0.6.3",
+    "@vercel/fonts": "^0.7.0",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
