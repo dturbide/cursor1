@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/config';
+import { AuthError } from '@supabase/supabase-js';
 
 export default function AuthForm() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ export default function AuthForm() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -24,8 +25,12 @@ export default function AuthForm() {
       if (error) throw error;
 
       router.refresh();
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        setError(error.message);
+      } else {
+        setError('Une erreur est survenue lors de la connexion');
+      }
     }
   };
 

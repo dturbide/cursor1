@@ -2,10 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react"
 import {
-  ArrowUpDown,
   CheckCircle2,
   Edit,
-  MoreHorizontal,
   Search,
   Shield,
   ShieldAlert,
@@ -37,7 +35,7 @@ export default function UserManagement() {
   const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -46,16 +44,20 @@ export default function UserManagement() {
 
       if (error) throw error
       setUsers(data || [])
-    } catch (error: any) {
-      setError(error.message)
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('Une erreur est survenue')
+      }
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
     fetchUsers()
-  }, [])
+  }, [fetchUsers])
 
   // Fonction pour garantir qu'il y a au moins un superadmin
   const ensureSuperAdmin = useCallback(async () => {
