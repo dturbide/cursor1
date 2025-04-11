@@ -15,6 +15,9 @@ export async function middleware(req: NextRequest) {
   // Gérer d'abord l'internationalisation
   const response = intlMiddleware(req);
   
+  // Extraire la locale de l'URL
+  const locale = req.nextUrl.pathname.split('/')[1] || defaultLocale;
+  
   // Configurer le client Supabase
   const supabase = createMiddlewareClient({ req, res: response });
 
@@ -31,6 +34,7 @@ export async function middleware(req: NextRequest) {
   // Logging pour le débogage
   console.log('Middleware path:', req.nextUrl.pathname);
   console.log('Session exists:', !!session);
+  console.log('Current locale:', locale);
 
   // Si l'utilisateur est connecté, récupérer son rôle
   let userRole = null;
@@ -54,22 +58,22 @@ export async function middleware(req: NextRequest) {
   }
 
   // Routes publiques (accessibles uniquement si NON authentifié)
-  if (['/auth/login', '/auth/register'].includes(req.nextUrl.pathname)) {
+  if ([`/${locale}/auth/login`, `/${locale}/auth/register`].includes(req.nextUrl.pathname)) {
     if (session) {
       // Rediriger vers le dashboard approprié selon le rôle
       if (userRole === 'superadmin') {
-        return NextResponse.redirect(new URL('/superadmin/dashboard', req.url));
+        return NextResponse.redirect(new URL(`/${locale}/superadmin/dashboard`, req.url));
       }
-      return NextResponse.redirect(new URL('/dashboard', req.url));
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
     }
     return response;
   }
 
   // Route de login superadmin
-  if (req.nextUrl.pathname === '/auth/superadmin/login') {
+  if (req.nextUrl.pathname === `/${locale}/auth/superadmin/login`) {
     // Si l'utilisateur est déjà connecté et est un superadmin, rediriger vers le dashboard
     if (session && userRole === 'superadmin') {
-      return NextResponse.redirect(new URL('/superadmin/dashboard', req.url));
+      return NextResponse.redirect(new URL(`/${locale}/superadmin/dashboard`, req.url));
     }
     // Sinon, permettre l'accès à la page de connexion
     return response;
@@ -78,31 +82,31 @@ export async function middleware(req: NextRequest) {
   // Rediriger vers login si pas de session pour toutes les routes protégées
   if (!session) {
     // Redirection spéciale pour les routes superadmin
-    if (req.nextUrl.pathname.startsWith('/superadmin')) {
-      return NextResponse.redirect(new URL('/auth/superadmin/login', req.url));
+    if (req.nextUrl.pathname.startsWith(`/${locale}/superadmin`)) {
+      return NextResponse.redirect(new URL(`/${locale}/auth/superadmin/login`, req.url));
     }
     
     // Redirection standard pour les autres routes protégées
     if (!req.nextUrl.pathname.startsWith('/_next') && 
         !req.nextUrl.pathname.startsWith('/api') && 
-        !req.nextUrl.pathname.startsWith('/auth')) {
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+        !req.nextUrl.pathname.startsWith(`/${locale}/auth`)) {
+      return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
     }
   }
 
   // Protection des routes superadmin
-  if (req.nextUrl.pathname.startsWith('/superadmin')) {
+  if (req.nextUrl.pathname.startsWith(`/${locale}/superadmin`)) {
     if (userRole !== 'superadmin') {
       console.log('Tentative d\'accès non autorisé à une route superadmin');
-      return NextResponse.redirect(new URL('/dashboard', req.url));
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
     }
   }
 
   // Protection des routes dashboard standard
-  if (req.nextUrl.pathname.startsWith('/dashboard')) {
+  if (req.nextUrl.pathname.startsWith(`/${locale}/dashboard`)) {
     if (!userRole) {
       console.log('Utilisateur sans rôle défini');
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+      return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
     }
   }
 

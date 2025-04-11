@@ -1,0 +1,49 @@
+{
+  "Home": {
+    "title": "Cursor1 - Gestion d'entreprise",
+    "description": "Application SaaS pour la gestion efficace de votre entreprise",
+    "login": "Se connecter",
+    "register": "S'inscrire"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "settings": "Paramètres",
+    "lightMode": "Mode clair",
+    "darkMode": "Mode sombre",
+    "logout": "Déconnexion"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe"
+  },
+  "admin": {
+    "company": {
+      "title": "Gestion des entreprises",
+      "add": "Ajouter une entreprise",
+      "edit": "Modifier l'entreprise",
+      "delete": "Supprimer l'entreprise",
+      "name": "Nom de l'entreprise",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email",
+      "website": "Site web"
+    }
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "companies": "Entreprises",
+    "users": "Utilisateurs",
+    "settings": "Paramètres",
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher une commande...",
+    "noResults": "Aucun résultat trouvé"
+  }
+} 
