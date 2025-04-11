@@ -37,7 +37,7 @@ export default function AuthGuard({ children, requiredRole }: AuthGuardProps) {
 
         setIsLoading(false);
       } catch (error) {
-        console.error('Erreur lors de la vérification de l'authentification:', error);
+        console.error('Erreur lors de la verification de l\'authentification:', error);
         router.push(`/${locale}/auth/login`);
       }
     };
