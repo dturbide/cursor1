@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import Link from 'next-intl';
+import { Link } from 'next-intl';
 
 type Props = {
   params: { locale: string }
