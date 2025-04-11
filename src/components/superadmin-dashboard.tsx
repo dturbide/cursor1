@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from '@/lib/supabase/config'
 import { 
   Card, 
   CardContent, 
@@ -15,14 +14,9 @@ import {
   ShieldAlert,
   FileText,
   Settings,
-  BarChart,
   AlertCircle,
-  CheckCircle,
-  CircleUser,
-  ShieldCheck,
-  Shield
+  CheckCircle
 } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Stats {
   totalUsers: number
@@ -130,7 +124,7 @@ export function SuperAdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{stats?.admins || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Administrateurs d'organisations
+              Administrateurs d&apos;organisations
             </p>
           </CardContent>
         </Card>
@@ -174,7 +168,7 @@ export function SuperAdminDashboard() {
         <CardHeader>
           <CardTitle>État du système</CardTitle>
           <CardDescription>
-            Aperçu de l'état de santé et des performances
+            Aperçu de l&apos;état de santé et des performances
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -202,45 +196,9 @@ export function SuperAdminDashboard() {
               </div>
               <span className="text-sm text-yellow-500">Performance réduite</span>
             </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <span className="font-medium">Stockage</span>
-              </div>
-              <span className="text-sm text-green-500">Opérationnel</span>
-            </div>
           </div>
         </CardContent>
       </Card>
-
-      <TabsContent value="users" className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Statistiques des utilisateurs</CardTitle>
-            <CardDescription>
-              Informations détaillées sur les utilisateurs du système
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Contenu détaillé des statistiques d&apos;utilisateurs</p>
-          </CardContent>
-        </Card>
-      </TabsContent>
-      
-      <TabsContent value="security" className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rapport de sécurité</CardTitle>
-            <CardDescription>
-              Suivi des tentatives de connexion et événements de sécurité
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Contenu détaillé du rapport de sécurité</p>
-          </CardContent>
-        </Card>
-      </TabsContent>
     </div>
   )
 } 
