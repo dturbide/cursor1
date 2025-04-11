@@ -43,6 +43,13 @@
       "website": "Website"
     }
   },
+  "analytics": {
+    "title": "Analytics",
+    "description": "View system statistics and trends",
+    "loading": "Loading data...",
+    "error": "Error loading data",
+    "noData": "No data available"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "companies": "Companies",

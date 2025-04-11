@@ -43,6 +43,13 @@
       "website": "Site web"
     }
   },
+  "analytics": {
+    "title": "Analytiques",
+    "description": "Consultez les statistiques et tendances du système",
+    "loading": "Chargement des données...",
+    "error": "Erreur lors du chargement des données",
+    "noData": "Aucune donnée disponible"
+  },
   "navigation": {
     "dashboard": "Tableau de bord",
     "companies": "Entreprises",
