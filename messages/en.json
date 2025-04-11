@@ -6,7 +6,11 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "add": "Add"
+    "add": "Add",
+    "settings": "Settings",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "logout": "Logout"
   },
   "auth": {
     "login": "Login",
@@ -31,6 +35,9 @@
     "dashboard": "Dashboard",
     "companies": "Companies",
     "users": "Users",
-    "settings": "Settings"
+    "settings": "Settings",
+    "search": "Search",
+    "searchPlaceholder": "Search for a command...",
+    "noResults": "No results found"
   }
 } 

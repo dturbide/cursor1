@@ -6,6 +6,7 @@ import { Settings, Package2, Sun, Moon, LogOut } from "lucide-react"
 import { useTheme } from "next-themes"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from "next/navigation"
+import { useSupabase } from '@/lib/supabase'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -16,23 +17,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LanguageSelector } from '@/components/language-selector'
+import { MainNav } from '@/components/main-nav'
+import { CommandMenu } from '@/components/command-menu'
+import { UserNav } from '@/components/user-nav'
 
 export function Header() {
   const { setTheme } = useTheme()
   const router = useRouter()
-  const [isLoggingOut, setIsLoggingOut] = React.useState(false)
-  const supabase = createClientComponentClient()
+  const { supabase } = useSupabase()
 
   const handleLogout = async () => {
     try {
-      setIsLoggingOut(true)
-      await supabase.auth.signOut()
-      router.push('/auth/login')
+      await supabase?.auth.signOut()
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error)
-      router.push('/auth/login')
-    } finally {
-      setIsLoggingOut(false)
+      console.error('Error signing out:', error)
     }
   }
 
@@ -46,7 +44,7 @@ export function Header() {
           </div>
           <nav className="flex items-center space-x-2">
             <LanguageSelector />
-            <UserNav />
+            <UserNav onLogout={handleLogout} />
           </nav>
         </div>
       </div>
