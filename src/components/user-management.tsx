@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import {
   ArrowUpDown,
   CheckCircle2,
@@ -58,7 +58,7 @@ export function UserManagement() {
   const supabase = createClientComponentClient()
 
   // Fonction pour charger les utilisateurs
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true)
     try {
       const { data, error } = await supabase
@@ -78,11 +78,11 @@ export function UserManagement() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
   
   useEffect(() => {
     fetchUsers()
-  }, [supabase])
+  }, [fetchUsers])
 
   // Filtrer les utilisateurs en fonction des critères de recherche et des filtres
   const filteredUsers = users.filter((user) => {

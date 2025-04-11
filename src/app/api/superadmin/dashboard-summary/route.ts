@@ -51,14 +51,14 @@ export async function GET() {
     }
 
     // Récupérer les dernières activités d'audit (10 maximum)
-    const { data: recentActivities, error: recentActivitiesError } = await supabase
+    const { data: recentActivities } = await supabase
       .from('audit_logs')
       .select('action, entity_type, created_at')
       .order('created_at', { ascending: false })
       .limit(10);
 
     // Récupérer le nombre d'utilisateurs par rôle
-    const { data: userRoles, error: userRolesError } = await supabase
+    const { data: userRoles } = await supabase
       .from('user_profiles')
       .select('role')
       .not('role', 'is', null);

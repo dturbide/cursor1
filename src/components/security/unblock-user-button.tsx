@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 interface UnblockUserButtonProps {
   userId: string;
@@ -37,9 +37,10 @@ export function UnblockUserButton({ userId }: UnblockUserButtonProps) {
       
       // Rafraîchir la page pour afficher les changements
       window.location.reload();
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Erreur lors du déblocage:', error);
-      toast.error(error.message || 'Erreur lors du déblocage de l\'utilisateur');
+      const errorMessage = error instanceof Error ? error.message : 'Erreur lors du déblocage de l\'utilisateur';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

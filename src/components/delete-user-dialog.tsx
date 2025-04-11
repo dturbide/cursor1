@@ -70,9 +70,10 @@ export function DeleteUserDialog({ user, open, onOpenChange, onSuccess }: Delete
       onOpenChange(false)
       onSuccess()
 
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Erreur lors de la suppression de l\'utilisateur:', error)
-      toast.error(error.message || "Erreur lors de la suppression de l'utilisateur")
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression de l'utilisateur"
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }

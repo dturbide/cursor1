@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowUpIcon, Building2, CreditCard, DollarSign, Shield, Users } from "lucide-react"
+import { Building2, CreditCard, Shield, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface DashboardData {

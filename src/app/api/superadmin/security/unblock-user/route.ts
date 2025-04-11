@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     // Mettre à jour le profil de l'utilisateur bloqué
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('user_profiles')
       .update({
         is_blocked: false,

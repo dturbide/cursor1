@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { format, formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow } from "date-fns"
 import { fr } from "date-fns/locale"
 
 interface Activity {
@@ -85,7 +85,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
   const getRelativeTime = (dateString: string) => {
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: fr });
-    } catch (e) {
+    } catch (_) {
       return 'Date inconnue';
     }
   };

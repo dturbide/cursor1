@@ -96,9 +96,10 @@ export function AddSuperAdminDialog({ onSuccess }: AddSuperAdminDialogProps) {
       setOpen(false)
       onSuccess()
 
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Erreur lors de la création du SuperAdmin:', error)
-      toast.error(error.message || "Erreur lors de la création du SuperAdmin")
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la création du SuperAdmin"
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }

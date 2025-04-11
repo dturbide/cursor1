@@ -126,9 +126,10 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
       onOpenChange(false)
       onSuccess()
 
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Erreur lors de la modification de l\'utilisateur:', error)
-      toast.error(error.message || "Erreur lors de la modification de l'utilisateur")
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la modification de l'utilisateur"
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
