@@ -1,10 +1,8 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/config';
 import { useEffect, useState } from 'react';
 
-export const supabase = createClientComponentClient();
-
 export function useSupabase() {
-  const [supabaseClient] = useState(() => createClientComponentClient());
+  const [supabaseClient] = useState(() => createClient());
 
   useEffect(() => {
     const {

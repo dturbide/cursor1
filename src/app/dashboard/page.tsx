@@ -1,10 +1,14 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { createServerActionClient } from '@/lib/supabase/server';
+import { DashboardShell } from '@/components/dashboard-shell';
+import { DashboardHeader } from '@/components/dashboard-header';
+import { DashboardCards } from '@/components/dashboard-cards';
 
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies });
-
+  const cookieStore = cookies();
+  const supabase = createServerActionClient(cookieStore);
+  
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -13,26 +17,23 @@ export default async function DashboardPage() {
     redirect('/auth/login');
   }
 
+  // Récupérer les informations utilisateur
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+
+  if (!user) {
+    redirect('/auth/login');
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white shadow rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Tableau de bord
-          </h1>
-          <p className="text-gray-600">
-            Bienvenue, {session.user.email}
-          </p>
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Se déconnecter
-            </button>
-          </form>
-        </div>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Tableau de bord"
+        text="Bienvenue dans votre espace de travail."
+      />
+      <div className="grid gap-10">
+        <DashboardCards />
       </div>
-    </div>
+    </DashboardShell>
   );
 }

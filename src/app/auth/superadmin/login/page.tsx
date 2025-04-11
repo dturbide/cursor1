@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/config';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -14,10 +14,10 @@ export default function SuperAdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<CustomError | null>(null);
   const [redirecting, setRedirecting] = useState(false);
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   // Vérifier si l'utilisateur est déjà connecté
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function SuperAdminLoginPage() {
     } catch (error: unknown) {
       console.error('Erreur complète:', error);
       const customError = error as CustomError;
-      setError(customError.message || 'Une erreur est survenue lors de la connexion');
+      setError(customError);
       setLoading(false);
       setRedirecting(false);
     }
@@ -94,7 +94,7 @@ export default function SuperAdminLoginPage() {
         <div className="bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-purple-800">
           {error && (
             <div className="mb-4 bg-red-900/40 border border-red-600 text-red-300 px-4 py-3 rounded relative">
-              <span className="block sm:inline">{error}</span>
+              <span className="block sm:inline">{error.message}</span>
             </div>
           )}
 

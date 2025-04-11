@@ -1,44 +1,49 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { PaymentManagement } from '@/components/payment-management';
+import { createServerActionClient } from '@/lib/supabase/server';
+import { DashboardShell } from '@/components/dashboard-shell';
+import { DashboardHeader } from '@/components/dashboard-header';
 
-export default async function PaymentsPage() {
-  const supabase = createServerComponentClient({ cookies });
+export default async function SuperAdminPaymentsPage() {
+  const cookieStore = cookies();
+  const supabase = createServerActionClient(cookieStore);
   
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  
+
   if (!session) {
     redirect('/auth/login');
   }
-  
+
   // Récupérer les informations utilisateur
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
-  
+
   if (!user) {
     redirect('/auth/login');
   }
-  
+
   // Vérifier si l'utilisateur a le rôle superadmin
-  const userRole = user.user_metadata?.role;
-  
-  if (userRole !== 'superadmin') {
+  const { data: userProfile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (!userProfile || userProfile.role !== 'superadmin') {
     redirect('/dashboard');
   }
 
-  // Note: Ici, nous pourrions récupérer les données de paiements depuis Supabase
-  // quand la table sera créée
-
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Gestion des Paiements</h2>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Paiements"
+        text="Suivi et gestion des paiements système."
+      />
+      <div className="grid gap-10">
+        <p>Contenu de la gestion des paiements...</p>
       </div>
-      
-      <PaymentManagement />
-    </div>
+    </DashboardShell>
   );
 } 

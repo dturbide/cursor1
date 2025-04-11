@@ -1,27 +1,27 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createRouteHandlerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  try {
-    const { email, password } = await request.json();
-    const supabase = createRouteHandlerClient({ cookies });
+  const requestUrl = new URL(request.url);
+  const formData = await request.formData();
+  const email = String(formData.get('email'));
+  const password = String(formData.get('password'));
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient(cookieStore);
 
-    // Tentative de connexion
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Erreur lors de la connexion:', error);
-    return NextResponse.json({ error: 'Une erreur est survenue' }, { status: 500 });
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 401 });
   }
+
+  return NextResponse.redirect(new URL('/dashboard', requestUrl.origin), {
+    status: 301,
+  });
 }
 
 // Ajouter la méthode GET pour gérer les redirections

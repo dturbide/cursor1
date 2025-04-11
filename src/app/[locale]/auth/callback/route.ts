@@ -1,18 +1,17 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-  const locale = requestUrl.pathname.split('/')[1]; // Extraire la locale de l'URL
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url)
+  const code = requestUrl.searchParams.get('code')
 
   if (code) {
-    const supabase = createRouteHandlerClient({ cookies });
-    await supabase.auth.exchangeCodeForSession(code);
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient(cookieStore)
+    await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // Rediriger vers le dashboard avec la locale
-  return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  // URL to redirect to after sign in process completes
+  return NextResponse.redirect(requestUrl.origin)
 } 

@@ -1,21 +1,38 @@
-"use client"
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { createServerActionClient } from '@/lib/supabase/server';
+import { DashboardShell } from '@/components/dashboard-shell';
+import { DashboardHeader } from '@/components/dashboard-header';
 
-import DashboardShell from "@/components/dashboard-shell"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { UserManagement } from "@/components/user-management"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+export default async function UsersPage() {
+  const cookieStore = cookies();
+  const supabase = createServerActionClient(cookieStore);
+  
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-export default function UsersPage() {
+  if (!session) {
+    redirect('/auth/login');
+  }
+
+  // Récupérer les informations utilisateur
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+
+  if (!user) {
+    redirect('/auth/login');
+  }
+
   return (
     <DashboardShell>
-      <DashboardHeader heading="Gestion des Utilisateurs" text="Gérez les utilisateurs de votre application">
-        <Button className="gap-1">
-          <PlusCircle className="h-4 w-4" />
-          Ajouter un utilisateur
-        </Button>
-      </DashboardHeader>
-      <UserManagement />
+      <DashboardHeader
+        heading="Utilisateurs"
+        text="Gestion des utilisateurs."
+      />
+      <div className="grid gap-10">
+        <p>Contenu de la gestion des utilisateurs...</p>
+      </div>
     </DashboardShell>
-  )
+  );
 }

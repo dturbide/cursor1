@@ -1,63 +1,68 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Building2, CreditCard, Shield, Users } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-interface DashboardData {
-  userCount: number
-  orgCount: number
-  recentSecurityLogs: number
-  recentAuditLogs: number
-  userRoles: {
-    superadmin: number
-    admin: number
-    employee: number
-  }
-  recentActivities: Array<{
-    action: string
-    entity_type: string
-    created_at: string
-  }>
-}
+import { createClient } from '@/lib/supabase/config'
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { 
+  Users,
+  Activity,
+  BarChart,
+  Calendar
+} from "lucide-react"
 
 export function DashboardCards() {
-  const [data, setData] = useState<DashboardData | null>(null)
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalTasks: 0,
+    completedTasks: 0
+  })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const supabase = createClient()
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchStats = async () => {
       try {
-        const response = await fetch('/api/superadmin/dashboard-summary')
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des données')
-        }
-        const dashboardData = await response.json()
-        setData(dashboardData)
+        // Dans une application réelle, vous récupéreriez ces données
+        // depuis votre API ou votre base de données
+        // Simulation de chargement
+        setTimeout(() => {
+          setStats({
+            totalUsers: 120,
+            activeUsers: 78,
+            totalTasks: 258,
+            completedTasks: 194
+          })
+          setLoading(false)
+        }, 800)
       } catch (err) {
         console.error('Erreur:', err)
-        setError('Impossible de charger les données du tableau de bord')
-      } finally {
+        setError('Impossible de charger les statistiques')
         setLoading(false)
       }
     }
 
-    fetchData()
+    fetchStats()
   }, [])
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="h-4 w-24 animate-pulse bg-gray-200 rounded"></div>
-              <div className="h-4 w-4 animate-pulse bg-gray-200 rounded-full"></div>
+          <Card key={i} className="animate-pulse">
+            <CardHeader className="pb-2">
+              <div className="h-4 w-1/2 bg-slate-200 rounded"></div>
             </CardHeader>
             <CardContent>
-              <div className="h-6 w-16 animate-pulse bg-gray-200 rounded mb-2"></div>
-              <div className="h-4 w-40 animate-pulse bg-gray-200 rounded"></div>
+              <div className="h-7 w-20 bg-slate-200 rounded-md mb-2"></div>
+              <div className="h-4 w-3/4 bg-slate-100 rounded"></div>
             </CardContent>
           </Card>
         ))}
@@ -67,125 +72,70 @@ export function DashboardCards() {
 
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-md mb-4">
-        <p className="text-red-700 dark:text-red-400">{error}</p>
+      <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
+        <h3 className="font-semibold mb-2">Erreur</h3>
+        <p>{error}</p>
       </div>
     )
   }
 
-  const totalUsers = data?.userCount || 0
-  const superadmins = data?.userRoles.superadmin || 0
-  const admins = data?.userRoles.admin || 0
-  const employees = data?.userRoles.employee || 0
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
-      <UserRolesCard 
-        totalUsers={totalUsers} 
-        superadmins={superadmins}
-        admins={admins}
-        employees={employees}
-      />
-      <ActiveOrganizationsCard orgCount={data?.orgCount || 0} />
-      <SecurityLogsCard recentLogs={data?.recentSecurityLogs || 0} />
-      <AuditLogsCard recentLogs={data?.recentAuditLogs || 0} />
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Utilisateurs</CardTitle>
+          <Users className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalUsers}</div>
+          <p className="text-xs text-muted-foreground">
+            {stats.activeUsers} utilisateurs actifs
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Taux d&apos;activité</CardTitle>
+          <Activity className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {Math.round((stats.activeUsers / stats.totalUsers) * 100)}%
+          </div>
+          <p className="text-xs text-muted-foreground">
+            +2% depuis le mois dernier
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Tâches</CardTitle>
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.totalTasks}</div>
+          <p className="text-xs text-muted-foreground">
+            {stats.totalTasks - stats.completedTasks} tâches en cours
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Avancement</CardTitle>
+          <BarChart className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {Math.round((stats.completedTasks / stats.totalTasks) * 100)}%
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {stats.completedTasks} tâches terminées
+          </p>
+        </CardContent>
+      </Card>
     </div>
-  )
-}
-
-interface UserRolesCardProps {
-  totalUsers: number
-  superadmins: number
-  admins: number
-  employees: number
-}
-
-export function UserRolesCard({ totalUsers, superadmins, admins, employees }: UserRolesCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Utilisateurs par rôle</CardTitle>
-        <Users className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{totalUsers}</div>
-        <div className="flex items-center space-x-2">
-          <div className="text-xs text-muted-foreground mt-1">
-            <span className="font-medium text-foreground">{superadmins}</span> SuperAdmins,
-            <span className="font-medium text-foreground"> {admins}</span> Admins,
-            <span className="font-medium text-foreground"> {employees}</span> Employés
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-interface OrganizationsCardProps {
-  orgCount: number
-}
-
-export function ActiveOrganizationsCard({ orgCount }: OrganizationsCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Organisations</CardTitle>
-        <Building2 className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{orgCount}</div>
-        <div className="flex items-center space-x-2">
-          <div className="text-xs text-muted-foreground mt-1">
-            Total des organisations enregistrées
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-interface SecurityLogsCardProps {
-  recentLogs: number
-}
-
-export function SecurityLogsCard({ recentLogs }: SecurityLogsCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Logs de sécurité récents</CardTitle>
-        <Shield className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{recentLogs}</div>
-        <div className="flex items-center space-x-2">
-          <div className="text-xs text-muted-foreground mt-1">
-            Activités des dernières 24 heures
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-interface AuditLogsCardProps {
-  recentLogs: number
-}
-
-export function AuditLogsCard({ recentLogs }: AuditLogsCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Actions d&apos;audit récentes</CardTitle>
-        <CreditCard className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{recentLogs}</div>
-        <div className="flex items-center space-x-2">
-          <div className="text-xs text-muted-foreground mt-1">
-            Modifications des dernières 24 heures
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   )
 }

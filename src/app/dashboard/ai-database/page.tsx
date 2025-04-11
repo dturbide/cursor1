@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import AIDatabaseEditor from '@/components/dashboard/AIDatabaseEditor'
+import { createServerActionClient } from '@/lib/supabase/server'
+import { DashboardShell } from '@/components/dashboard-shell'
+import { DashboardHeader } from '@/components/dashboard-header'
+import { AIDatabase } from '@/components/ai-database'
 
 export const metadata = {
   title: 'Éditeur de Base de Données IA | Dashboard',
@@ -9,7 +11,8 @@ export const metadata = {
 }
 
 export default async function AIDatabasePage() {
-  const supabase = createServerComponentClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerActionClient(cookieStore)
   
   const {
     data: { session },
@@ -32,11 +35,14 @@ export default async function AIDatabasePage() {
   }
   
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-        Éditeur de Base de Données IA
-      </h1>
-      <AIDatabaseEditor />
-    </div>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Base de données IA"
+        text="Utilisez notre base de données enrichie par l'IA."
+      />
+      <div className="grid gap-8">
+        <AIDatabase />
+      </div>
+    </DashboardShell>
   )
 } 
