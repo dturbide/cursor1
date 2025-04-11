@@ -1,17 +1,9 @@
 {
-  "buildCommand": "next build",
-  "framework": "nextjs",
-  "outputDirectory": ".next",
-  "devCommand": "next dev",
-  "installCommand": "npm install",
+  "version": 2,
   "builds": [
-    {
-      "src": "next.config.js",
-      "use": "@vercel/next"
-    }
+    { "src": "index.html", "use": "@vercel/static" }
   ],
-  "regions": ["iad1"],
-  "env": {
-    "NEXT_PUBLIC_FORCE_DYNAMIC": "true"
-  }
+  "routes": [
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
