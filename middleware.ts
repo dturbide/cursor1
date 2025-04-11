@@ -2,29 +2,24 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
+import { locales, defaultLocale } from './src/i18n/settings';
 
-// Middleware pour l'internationalisation
+// Créer le middleware d'internationalisation
 const intlMiddleware = createIntlMiddleware({
-  locales: ['fr', 'en'],
-  defaultLocale: 'fr',
+  locales,
+  defaultLocale,
   localePrefix: 'as-needed'
 });
 
 export async function middleware(req: NextRequest) {
-  // Gestion de l'internationalisation d'abord
-  const intlResponse = intlMiddleware(req);
+  // Gérer d'abord l'internationalisation
+  const response = intlMiddleware(req);
   
-  // Si la route est gérée par l'internationalisation, retourner sa réponse
-  if (intlResponse.status !== 200) {
-    return intlResponse;
-  }
-  
-  // Sinon, continuer avec la logique d'authentification
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  // Configurer le client Supabase
+  const supabase = createMiddlewareClient({ req, res: response });
 
   // Ajouter des en-têtes CSP pour autoriser eval
-  res.headers.set(
+  response.headers.set(
     'Content-Security-Policy',
     "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co; img-src 'self' data:; font-src 'self' data:;"
   );
@@ -67,7 +62,7 @@ export async function middleware(req: NextRequest) {
       }
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
-    return res;
+    return response;
   }
 
   // Route de login superadmin
@@ -77,7 +72,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/superadmin/dashboard', req.url));
     }
     // Sinon, permettre l'accès à la page de connexion
-    return res;
+    return response;
   }
 
   // Rediriger vers login si pas de session pour toutes les routes protégées
@@ -111,9 +106,9 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return res;
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/).*)']
 }; 

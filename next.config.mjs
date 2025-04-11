@@ -1,22 +1,13 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: 'standalone',
-  swcMinify: true,
-  experimental: {
-    serverExternalPackages: ['next-intl']
-  },
-  i18n: {
-    locales: ['fr', 'en'],
-    defaultLocale: 'fr',
-    localeDetection: true
-  }
+  output: 'standalone'
 };
 
 export default withNextIntl(nextConfig); 
