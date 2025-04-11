@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/config';
+import { createClient } from '@/lib/supabase/client';
 import { AuthError } from '@supabase/supabase-js';
 
 export default function LoginForm() {
@@ -10,7 +10,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient;
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

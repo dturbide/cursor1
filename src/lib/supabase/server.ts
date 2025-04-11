@@ -32,10 +32,10 @@ export const createServerComponentClient = () => {
   )
 }
 
-export function createRouteHandlerClient(cookieStore: ReturnType<typeof cookies>) {
+export const createRouteHandlerClient = (cookieStore: ReturnType<typeof cookies>) => {
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         get(name: string) {
