@@ -1,10 +1,9 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
-export default function LocalizedHome() {
-  const t = useTranslations('Home');
+export default async function LocalizedHome() {
+  const t = await getTranslations('Home');
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
